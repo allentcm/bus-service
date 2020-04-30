@@ -43,11 +43,13 @@
                         </div>
                     </div>
 
-                    <div class="panel-body">
+                    <ul class="list-group">
                         <li class="list-group-item" v-for="busStop in busStops">
-                            <p>{{ busStop.BusStopCode }}</p>
+                            <p>Code: {{ busStop.bus_stop_code }}</p>
+                            <p>Road Name: {{ busStop.road_name }}</p>
+                            <p>Coordinate: {{ busStop.latitude }}, {{ busStop.longitude }}</p>
                         </li>
-                    </div>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -86,51 +88,13 @@
              * Get all the bus stops in SG.
              */
             getBusStops() {
-                const self = this;
-                const apiUrl = 'http://datamall2.mytransport.sg/ltaodataservice/BusStops';
-                const xhr = this.createCORSRequest('GET', apiUrl);
-                xhr.setRequestHeader('AccountKey', 'mFif1WYVRouNYFiWTZKqZQ==');
-                xhr.setRequestHeader('accept', 'application/json')
-                if (!xhr) {
-                    return;
-                }
-
-                xhr.onreadystatechange = function() {
-                    if(xhr.readyState == 4) {
-                        if(xhr.status == 200) {
-                            var response = JSON.parse(xhr.responseText);
-                            if (typeof response.data === 'object') {
-                                self.busStops = response.data.value;
-                            } else {
-                            }
-                        } else {
-                            var response = JSON.parse(xhr.responseText);
-                            // show error message
-                            Console.log(response.status_code + ": " + response.status_txt);
-                        }
-                    }
-                }
-                xhr.send();
-            },
-
-            /**
-             * Create CORS request
-             */
-            createCORSRequest(method, url) {
-                var xhr = new XMLHttpRequest();
-
-                if ('withCredentials' in xhr) {
-                    // XHR for Chrome/Firefox/Opera/Safari.
-                    xhr.open(method, url, true);
-                } else if (typeof XDomainRequest != 'undefined') {
-                    // XDomainRequest for IE.
-                    xhr = new XDomainRequest();
-                    xhr.open(method, url);
-                } else {
-                    // CORS not supported.
-                    xhr = null;
-                }
-                return xhr;
+                axios.get('/api/bus-stops')
+                    .then(response => {
+                        this.busStops = response.data;
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    });
             },
 
             /**

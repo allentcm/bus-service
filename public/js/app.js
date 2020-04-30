@@ -45392,6 +45392,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -45426,51 +45428,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * Get all the bus stops in SG.
          */
         getBusStops: function getBusStops() {
-            var self = this;
-            var apiUrl = 'http://datamall2.mytransport.sg/ltaodataservice/BusStops';
-            var xhr = this.createCORSRequest('GET', apiUrl);
-            xhr.setRequestHeader('AccountKey', 'mFif1WYVRouNYFiWTZKqZQ==');
-            xhr.setRequestHeader('accept', 'application/json');
-            if (!xhr) {
-                return;
-            }
+            var _this2 = this;
 
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4) {
-                    if (xhr.status == 200) {
-                        var response = JSON.parse(xhr.responseText);
-                        if (_typeof(response.data) === 'object') {
-                            self.busStops = response.data.value;
-                        } else {}
-                    } else {
-                        var response = JSON.parse(xhr.responseText);
-                        // show error message
-                        Console.log(response.status_code + ": " + response.status_txt);
-                    }
-                }
-            };
-            xhr.send();
-        },
-
-
-        /**
-         * Create CORS request
-         */
-        createCORSRequest: function createCORSRequest(method, url) {
-            var xhr = new XMLHttpRequest();
-
-            if ('withCredentials' in xhr) {
-                // XHR for Chrome/Firefox/Opera/Safari.
-                xhr.open(method, url, true);
-            } else if (typeof XDomainRequest != 'undefined') {
-                // XDomainRequest for IE.
-                xhr = new XDomainRequest();
-                xhr.open(method, url);
-            } else {
-                // CORS not supported.
-                xhr = null;
-            }
-            return xhr;
+            axios.get('/api/bus-stops').then(function (response) {
+                _this2.busStops = response.data;
+            }).catch(function (error) {
+                console.log(error);
+            });
         },
 
 
@@ -45514,12 +45478,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * Persist the client to storage using the given form.
          */
         persistClient: function persistClient(method, uri, form, modal) {
-            var _this2 = this;
+            var _this3 = this;
 
             form.errors = [];
 
             axios[method](uri, form).then(function (response) {
-                _this2.getClients();
+                _this3.getClients();
 
                 form.name = '';
                 form.redirect = '';
@@ -45540,10 +45504,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * Destroy the given client.
          */
         destroy: function destroy(client) {
-            var _this3 = this;
+            var _this4 = this;
 
             axios.delete('/oauth/clients/' + client.id).then(function (response) {
-                _this3.getClients();
+                _this4.getClients();
             });
         }
     }
@@ -45636,11 +45600,22 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c(
-            "div",
-            { staticClass: "panel-body" },
+            "ul",
+            { staticClass: "list-group" },
             _vm._l(_vm.busStops, function(busStop) {
               return _c("li", { staticClass: "list-group-item" }, [
-                _c("p", [_vm._v(_vm._s(busStop.BusStopCode))])
+                _c("p", [_vm._v("Code: " + _vm._s(busStop.bus_stop_code))]),
+                _vm._v(" "),
+                _c("p", [_vm._v("Road Name: " + _vm._s(busStop.road_name))]),
+                _vm._v(" "),
+                _c("p", [
+                  _vm._v(
+                    "Coordinate: " +
+                      _vm._s(busStop.latitude) +
+                      ", " +
+                      _vm._s(busStop.longitude)
+                  )
+                ])
               ])
             }),
             0
