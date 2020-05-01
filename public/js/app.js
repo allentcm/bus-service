@@ -377,33 +377,6 @@ module.exports = {
 /* 1 */
 /***/ (function(module, exports) {
 
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
 /*
 	MIT License http://www.opensource.org/licenses/mit-license.php
 	Author Tobias Koppers @sokra
@@ -483,7 +456,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -711,7 +684,7 @@ function applyToTag (styleElement, obj) {
 
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -817,6 +790,33 @@ module.exports = function normalizeComponent (
     options: options
   }
 }
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
 
 
 /***/ }),
@@ -1382,7 +1382,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(13);
-module.exports = __webpack_require__(63);
+module.exports = __webpack_require__(68);
 
 
 /***/ }),
@@ -1407,12 +1407,13 @@ window.Vue = __webpack_require__(38);
  */
 
 Vue.component('example', __webpack_require__(42));
+Vue.component('bus-list', __webpack_require__(48));
 
-Vue.component('passport-clients', __webpack_require__(48));
+Vue.component('passport-clients', __webpack_require__(53));
 
-Vue.component('passport-authorized-clients', __webpack_require__(53));
+Vue.component('passport-authorized-clients', __webpack_require__(58));
 
-Vue.component('passport-personal-access-tokens', __webpack_require__(58));
+Vue.component('passport-personal-access-tokens', __webpack_require__(63));
 
 var app = new Vue({
     el: '#app'
@@ -18594,7 +18595,7 @@ if (token) {
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(16)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(16)(module)))
 
 /***/ }),
 /* 16 */
@@ -44939,7 +44940,7 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(40).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(40).setImmediate))
 
 /***/ }),
 /* 40 */
@@ -45009,7 +45010,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
                          (typeof global !== "undefined" && global.clearImmediate) ||
                          (this && this.clearImmediate);
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 /* 41 */
@@ -45202,7 +45203,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(7)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(7)))
 
 /***/ }),
 /* 42 */
@@ -45213,7 +45214,7 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(43)
 }
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = __webpack_require__(46)
 /* template */
@@ -45266,7 +45267,7 @@ var content = __webpack_require__(44);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(3)("9132d85a", content, false, {});
+var update = __webpack_require__(2)("9132d85a", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -45285,7 +45286,7 @@ if(false) {
 /* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -45468,88 +45469,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
             latitude: 0.00,
             longitude: 0.00,
-            buses: [],
             busStops: [],
             services: [],
             currentBusStop: [],
             currentBusStopDesc: '',
             form: {
-                bus: [],
-                errors: [],
-                name: '',
-                busy: false
-            },
-            editForm: {
                 bus: [],
                 errors: [],
                 name: '',
@@ -45561,7 +45491,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     },
     mounted: function mounted() {
         console.log('Component mounted.');
-        this.getBuses();
         this.getGeolocation();
     },
 
@@ -45587,25 +45516,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         /**
          * Get all the bus stops in SG.
          */
-        getBuses: function getBuses() {
+        populateBusStops: function populateBusStops() {
             var _this2 = this;
 
-            axios.get('/api/buses').then(function (response) {
-                _this2.buses = response.data;
-            }).catch(function (error) {
-                console.log(error);
-            });
-        },
-
-
-        /**
-         * Get all the bus stops in SG.
-         */
-        populateBusStops: function populateBusStops() {
-            var _this3 = this;
-
             axios.get('/api/bus-stops/').then(function (response) {
-                _this3.busStops = response.data;
+                _this2.busStops = response.data;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -45616,10 +45531,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * Get all the bus stops by proximity.
          */
         getBusStops: function getBusStops() {
-            var _this4 = this;
+            var _this3 = this;
 
             axios.get('/api/bus-stops/nearby?latitude=' + this.latitude + '&longitude=' + this.longitude).then(function (response) {
-                _this4.busStops = response.data;
+                _this3.busStops = response.data;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -45630,10 +45545,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * Get all the bus services for the target bus stop.
          */
         getBusServices: function getBusServices(busStopCode) {
-            var _this5 = this;
+            var _this4 = this;
 
             axios.get('/api/bus-stops/' + busStopCode + '/services').then(function (response) {
-                _this5.services = response.data;
+                _this4.services = response.data;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -45656,54 +45571,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          */
         closeBusServices: function closeBusServices() {
             $('#modal-bus-services').modal('hide');
-        },
-
-
-        /**
-         * Show the current bus stop bus services.
-         */
-        showEditBus: function showEditBus(index) {
-            this.selectedBus = this.buses[index];
-            this.editForm.name = this.selectedBus.name;
-            $('#modal-edit-service').modal('show');
-        },
-
-
-        /**
-         * Hide the current bus stop bus services.
-         */
-        closeEditBus: function closeEditBus() {
-            $('#modal-edit-service').modal('hide');
-            this.editForm.name = '';
-            this.editForm.busy = false;
-            this.editForm.errors = [];
-            this.editForm.bus = [];
-        },
-
-
-        /**
-         * Show the form to register bus service.
-         */
-        updateBusService: function updateBusService() {
-            var _this6 = this;
-
-            this.editForm.bus = this.selectedBus;
-            this.editForm.errors = [];
-            this.editForm.busy = true;
-            axios['post']('/api/buses/' + this.selectedBus.id, this.editForm).then(function (response) {
-                _this6.editForm.name = '';
-                _this6.editForm.busy = false;
-                _this6.editForm.errors = [];
-                _this6.editForm.bus = [];
-                _this6.getBuses();
-            }).catch(function (error) {
-                if (_typeof(error.response.data) === 'object') {
-                    _this6.editForm.errors = _.flatten(_.toArray(error.response.data));
-                } else {
-                    _this6.editForm.errors = ['Something went wrong. Please try again.'];
-                }
-                _this6.editForm.busy = false;
-            });
         },
 
 
@@ -45733,39 +45600,27 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * Show the form to register bus service.
          */
         registerBusService: function registerBusService() {
-            var _this7 = this;
+            var _this5 = this;
 
+            this.form.bus = this.selectedService.next_bus;
             this.form.bus.service_no = this.selectedService.service_no;
             this.form.bus.operator = this.selectedService.operator;
             this.form.bus.bus_stop_code = this.currentBusStop.bus_stop_code;
-            this.form.bus = this.selectedService.next_bus;
             this.form.errors = [];
             this.form.busy = true;
             axios['post']('/api/buses', this.form).then(function (response) {
-                _this7.form.name = '';
-                _this7.form.busy = false;
-                _this7.form.errors = [];
-                _this7.form.bus = [];
-                _this7.getBuses();
+                _this5.form.name = '';
+                _this5.form.busy = false;
+                _this5.form.errors = [];
+                _this5.form.bus = [];
+                _this5.getBuses();
             }).catch(function (error) {
                 if (_typeof(error.response.data) === 'object') {
-                    _this7.form.errors = _.flatten(_.toArray(error.response.data));
+                    _this5.form.errors = _.flatten(_.toArray(error.response.data));
                 } else {
-                    _this7.form.errors = ['Something went wrong. Please try again.'];
+                    _this5.form.errors = ['Something went wrong. Please try again.'];
                 }
-                _this7.form.busy = false;
-            });
-        },
-
-
-        /**
-         * Destroy the given client.
-         */
-        destroy: function destroy(bus) {
-            var _this8 = this;
-
-            axios.delete('/api/buses/' + bus.id).then(function (response) {
-                _this8.getBuses();
+                _this5.form.busy = false;
             });
         }
     }
@@ -45782,83 +45637,6 @@ var render = function() {
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row" }, [
       _c("div", { staticClass: "col-md-8 col-md-offset-2" }, [
-        _c("div", { staticClass: "panel panel-default" }, [
-          _c("div", { staticClass: "panel-heading" }, [
-            _c(
-              "div",
-              {
-                staticStyle: {
-                  display: "flex",
-                  "justify-content": "space-between",
-                  "align-items": "center"
-                }
-              },
-              [
-                _c("span", [
-                  _vm._v(
-                    "\n                            My Buses\n                        "
-                  )
-                ]),
-                _vm._v(" "),
-                _c(
-                  "a",
-                  { staticClass: "action-link", on: { click: _vm.getBuses } },
-                  [
-                    _vm._v(
-                      "\n                            Refresh\n                        "
-                    )
-                  ]
-                )
-              ]
-            )
-          ]),
-          _vm._v(" "),
-          _c(
-            "ul",
-            { staticClass: "list-group" },
-            _vm._l(_vm.buses, function(bus, index) {
-              return _c("li", { staticClass: "list-group-item" }, [
-                _c("p", [_vm._v("Name: " + _vm._s(bus.name))]),
-                _vm._v(" "),
-                _c(
-                  "a",
-                  {
-                    staticClass: "action-link",
-                    on: {
-                      click: function($event) {
-                        return _vm.showEditBus(index)
-                      }
-                    }
-                  },
-                  [
-                    _vm._v(
-                      "\n                            Edit\n                        "
-                    )
-                  ]
-                ),
-                _vm._v(" "),
-                _c(
-                  "a",
-                  {
-                    staticClass: "action-link",
-                    on: {
-                      click: function($event) {
-                        return _vm.destroy(bus)
-                      }
-                    }
-                  },
-                  [
-                    _vm._v(
-                      "\n                            Delete\n                        "
-                    )
-                  ]
-                )
-              ])
-            }),
-            0
-          )
-        ]),
-        _vm._v(" "),
         _c("div", { staticClass: "panel panel-default" }, [
           _c("div", { staticClass: "panel-heading" }, [
             _c(
@@ -46270,170 +46048,6 @@ var render = function() {
                 ]
               )
             ]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass: "modal fade",
-              attrs: {
-                id: "modal-edit-service",
-                tabindex: "-1",
-                role: "dialog"
-              }
-            },
-            [
-              _c(
-                "div",
-                { staticClass: "modal-dialog", attrs: { role: "document" } },
-                [
-                  _c("div", { staticClass: "modal-content" }, [
-                    _c("div", { staticClass: "modal-header" }, [
-                      _c(
-                        "button",
-                        {
-                          staticClass: "close",
-                          attrs: { type: "button ", "aria-hidden": "true" },
-                          on: {
-                            click: function($event) {
-                              return _vm.closeEditBus()
-                            }
-                          }
-                        },
-                        [_vm._v("×")]
-                      ),
-                      _vm._v(" "),
-                      _c("h4", { staticClass: "modal-title" }, [
-                        _vm._v("Edit bus")
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "modal-body" }, [
-                      _vm.editForm.errors.length > 0
-                        ? _c("div", { staticClass: "alert alert-danger" }, [
-                            _vm._m(1),
-                            _vm._v(" "),
-                            _c("br"),
-                            _vm._v(" "),
-                            _c(
-                              "ul",
-                              _vm._l(_vm.editForm.errors, function(error) {
-                                return _c("li", [
-                                  _vm._v(
-                                    "\n                                        " +
-                                      _vm._s(error) +
-                                      "\n                                    "
-                                  )
-                                ])
-                              }),
-                              0
-                            )
-                          ])
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _c(
-                        "form",
-                        {
-                          staticClass: "form-horizontal",
-                          attrs: { role: "form" },
-                          on: {
-                            submit: function($event) {
-                              $event.preventDefault()
-                            }
-                          }
-                        },
-                        [
-                          _c("div", { staticClass: "form-group" }, [
-                            _c(
-                              "label",
-                              {
-                                staticClass: "col-sm-4 control-label",
-                                attrs: { for: "name" }
-                              },
-                              [_vm._v("Name")]
-                            ),
-                            _vm._v(" "),
-                            _c("div", { staticClass: "col-sm-8" }, [
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.editForm.name,
-                                    expression: "editForm.name"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                attrs: { type: "text", id: "name" },
-                                domProps: { value: _vm.editForm.name },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.$set(
-                                      _vm.editForm,
-                                      "name",
-                                      $event.target.value
-                                    )
-                                  }
-                                }
-                              })
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "form-group" }, [
-                            _c(
-                              "div",
-                              { staticClass: "col-sm-offset-4 col-sm-8" },
-                              [
-                                _c(
-                                  "button",
-                                  {
-                                    staticClass: "btn btn-primary",
-                                    attrs: {
-                                      type: "button",
-                                      disabled: _vm.editForm.busy
-                                    },
-                                    on: { click: _vm.updateBusService }
-                                  },
-                                  [
-                                    _vm.editForm.busy
-                                      ? _c("i", {
-                                          staticClass:
-                                            "fa fa-btn fa-spinner fa-spin",
-                                          attrs: { "aria-hidden": "true" }
-                                        })
-                                      : _vm._e(),
-                                    _vm._v("Update")
-                                  ]
-                                )
-                              ]
-                            )
-                          ])
-                        ]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "modal-footer" }, [
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-secondary",
-                          attrs: { type: "button" },
-                          on: {
-                            click: function($event) {
-                              return _vm.closeEditBus()
-                            }
-                          }
-                        },
-                        [_vm._v("Close")]
-                      )
-                    ])
-                  ])
-                ]
-              )
-            ]
           )
         ])
       ])
@@ -46441,15 +46055,6 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("p", [
-      _c("strong", [_vm._v("Whoops!")]),
-      _vm._v(" Something went wrong!")
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -46478,11 +46083,583 @@ function injectStyle (ssrContext) {
   if (disposed) return
   __webpack_require__(49)
 }
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(3)
 /* script */
 var __vue_script__ = __webpack_require__(51)
 /* template */
 var __vue_template__ = __webpack_require__(52)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-559e9f52"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/BusList.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-559e9f52", Component.options)
+  } else {
+    hotAPI.reload("data-v-559e9f52", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(50);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(2)("e2fe2c00", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-559e9f52\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./BusList.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-559e9f52\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./BusList.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(1)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.action-link[data-v-559e9f52] {\n    cursor: pointer;\n}\n.m-b-none[data-v-559e9f52] {\n    margin-bottom: 0;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 51 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            latitude: 0.00,
+            longitude: 0.00,
+            buses: [],
+            editForm: {
+                bus: [],
+                errors: [],
+                name: '',
+                busy: false
+            }
+        };
+    },
+    mounted: function mounted() {
+        console.log('Component mounted.');
+        this.getBuses();
+    },
+
+
+    methods: {
+        /**
+         * Get all the bus stops in SG.
+         */
+        getBuses: function getBuses() {
+            var _this = this;
+
+            axios.get('/api/buses').then(function (response) {
+                _this.buses = response.data;
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+
+
+        /**
+         * Show the current bus stop bus services.
+         */
+        showEditBus: function showEditBus(index) {
+            this.selectedBus = this.buses[index];
+            this.editForm.name = this.selectedBus.name;
+            $('#modal-edit-service').modal('show');
+        },
+
+
+        /**
+         * Hide the current bus stop bus services.
+         */
+        closeEditBus: function closeEditBus() {
+            $('#modal-edit-service').modal('hide');
+            this.editForm.name = '';
+            this.editForm.busy = false;
+            this.editForm.errors = [];
+            this.editForm.bus = [];
+        },
+
+
+        /**
+         * Show the form to register bus service.
+         */
+        updateBusService: function updateBusService() {
+            var _this2 = this;
+
+            this.editForm.bus = this.selectedBus;
+            this.editForm.errors = [];
+            this.editForm.busy = true;
+            axios['post']('/api/buses/' + this.selectedBus.id, this.editForm).then(function (response) {
+                _this2.editForm.name = '';
+                _this2.editForm.busy = false;
+                _this2.editForm.errors = [];
+                _this2.editForm.bus = [];
+                _this2.getBuses();
+            }).catch(function (error) {
+                if (_typeof(error.response.data) === 'object') {
+                    _this2.editForm.errors = _.flatten(_.toArray(error.response.data));
+                } else {
+                    _this2.editForm.errors = ['Something went wrong. Please try again.'];
+                }
+                _this2.editForm.busy = false;
+            });
+        },
+
+
+        /**
+         * Destroy the given client.
+         */
+        destroy: function destroy(bus) {
+            var _this3 = this;
+
+            axios.delete('/api/buses/' + bus.id).then(function (response) {
+                _this3.getBuses();
+            });
+        }
+    }
+});
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "container" }, [
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-md-8 col-md-offset-2" }, [
+        _c("div", { staticClass: "panel panel-default" }, [
+          _c("div", { staticClass: "panel-heading" }, [
+            _c(
+              "div",
+              {
+                staticStyle: {
+                  display: "flex",
+                  "justify-content": "space-between",
+                  "align-items": "center"
+                }
+              },
+              [
+                _c("span", [
+                  _vm._v(
+                    "\n                            My Buses\n                        "
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  { staticClass: "action-link", on: { click: _vm.getBuses } },
+                  [
+                    _vm._v(
+                      "\n                            Refresh\n                        "
+                    )
+                  ]
+                )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c(
+            "ul",
+            { staticClass: "list-group" },
+            _vm._l(_vm.buses, function(bus, index) {
+              return _c("li", { staticClass: "list-group-item" }, [
+                _c("p", [_vm._v("Name: " + _vm._s(bus.name))]),
+                _vm._v(" "),
+                _c("p", [_vm._v("Bus No.: " + _vm._s(bus.service_no))]),
+                _vm._v(" "),
+                _c("p", [
+                  _vm._v("Bus Stop Code: " + _vm._s(bus.bus_stop_code))
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    staticStyle: {
+                      display: "flex",
+                      "justify-content": "space-between",
+                      "align-items": "center"
+                    }
+                  },
+                  [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "action-link",
+                        on: {
+                          click: function($event) {
+                            return _vm.showEditBus(index)
+                          }
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\n                                Edit\n                            "
+                        )
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      {
+                        staticClass: "action-link",
+                        on: {
+                          click: function($event) {
+                            return _vm.destroy(bus)
+                          }
+                        }
+                      },
+                      [
+                        _vm._v(
+                          "\n                                Delete\n                            "
+                        )
+                      ]
+                    )
+                  ]
+                )
+              ])
+            }),
+            0
+          )
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "modal fade",
+            attrs: { id: "modal-edit-service", tabindex: "-1", role: "dialog" }
+          },
+          [
+            _c(
+              "div",
+              { staticClass: "modal-dialog", attrs: { role: "document" } },
+              [
+                _c("div", { staticClass: "modal-content" }, [
+                  _c("div", { staticClass: "modal-header" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "close",
+                        attrs: { type: "button ", "aria-hidden": "true" },
+                        on: {
+                          click: function($event) {
+                            return _vm.closeEditBus()
+                          }
+                        }
+                      },
+                      [_vm._v("×")]
+                    ),
+                    _vm._v(" "),
+                    _c("h4", { staticClass: "modal-title" }, [
+                      _vm._v("Edit bus")
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "modal-body" }, [
+                    _vm.editForm.errors.length > 0
+                      ? _c("div", { staticClass: "alert alert-danger" }, [
+                          _vm._m(0),
+                          _vm._v(" "),
+                          _c("br"),
+                          _vm._v(" "),
+                          _c(
+                            "ul",
+                            _vm._l(_vm.editForm.errors, function(error) {
+                              return _c("li", [
+                                _vm._v(
+                                  "\n                                    " +
+                                    _vm._s(error) +
+                                    "\n                                "
+                                )
+                              ])
+                            }),
+                            0
+                          )
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c(
+                      "form",
+                      {
+                        staticClass: "form-horizontal",
+                        attrs: { role: "form" },
+                        on: {
+                          submit: function($event) {
+                            $event.preventDefault()
+                          }
+                        }
+                      },
+                      [
+                        _c("div", { staticClass: "form-group" }, [
+                          _c(
+                            "label",
+                            {
+                              staticClass: "col-sm-4 control-label",
+                              attrs: { for: "name" }
+                            },
+                            [_vm._v("Name")]
+                          ),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "col-sm-8" }, [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.editForm.name,
+                                  expression: "editForm.name"
+                                }
+                              ],
+                              staticClass: "form-control",
+                              attrs: { type: "text", id: "name" },
+                              domProps: { value: _vm.editForm.name },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.editForm,
+                                    "name",
+                                    $event.target.value
+                                  )
+                                }
+                              }
+                            })
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "form-group" }, [
+                          _c(
+                            "div",
+                            { staticClass: "col-sm-offset-4 col-sm-8" },
+                            [
+                              _c(
+                                "button",
+                                {
+                                  staticClass: "btn btn-primary",
+                                  attrs: {
+                                    type: "button",
+                                    disabled: _vm.editForm.busy
+                                  },
+                                  on: { click: _vm.updateBusService }
+                                },
+                                [
+                                  _vm.editForm.busy
+                                    ? _c("i", {
+                                        staticClass:
+                                          "fa fa-btn fa-spinner fa-spin",
+                                        attrs: { "aria-hidden": "true" }
+                                      })
+                                    : _vm._e(),
+                                  _vm._v("Update")
+                                ]
+                              )
+                            ]
+                          )
+                        ])
+                      ]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "modal-footer" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-secondary",
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            return _vm.closeEditBus()
+                          }
+                        }
+                      },
+                      [_vm._v("Close")]
+                    )
+                  ])
+                ])
+              ]
+            )
+          ]
+        )
+      ])
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", [
+      _c("strong", [_vm._v("Whoops!")]),
+      _vm._v(" Something went wrong!")
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-559e9f52", module.exports)
+  }
+}
+
+/***/ }),
+/* 53 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(54)
+}
+var normalizeComponent = __webpack_require__(3)
+/* script */
+var __vue_script__ = __webpack_require__(56)
+/* template */
+var __vue_template__ = __webpack_require__(57)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -46521,17 +46698,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 49 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(50);
+var content = __webpack_require__(55);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(3)("2a28cc49", content, false, {});
+var update = __webpack_require__(2)("2a28cc49", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -46547,10 +46724,10 @@ if(false) {
 }
 
 /***/ }),
-/* 50 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -46561,7 +46738,7 @@ exports.push([module.i, "\n.action-link[data-v-5d1d7d82] {\n    cursor: pointer;
 
 
 /***/ }),
-/* 51 */
+/* 56 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -46929,7 +47106,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 });
 
 /***/ }),
-/* 52 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47503,19 +47680,19 @@ if (false) {
 }
 
 /***/ }),
-/* 53 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(54)
+  __webpack_require__(59)
 }
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(56)
+var __vue_script__ = __webpack_require__(61)
 /* template */
-var __vue_template__ = __webpack_require__(57)
+var __vue_template__ = __webpack_require__(62)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -47554,17 +47731,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 54 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(55);
+var content = __webpack_require__(60);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(3)("10846595", content, false, {});
+var update = __webpack_require__(2)("10846595", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -47580,10 +47757,10 @@ if(false) {
 }
 
 /***/ }),
-/* 55 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -47594,7 +47771,7 @@ exports.push([module.i, "\n.action-link[data-v-2ee9fe67] {\n    cursor: pointer;
 
 
 /***/ }),
-/* 56 */
+/* 61 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47718,7 +47895,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 57 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -47828,19 +48005,19 @@ if (false) {
 }
 
 /***/ }),
-/* 58 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(59)
+  __webpack_require__(64)
 }
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(3)
 /* script */
-var __vue_script__ = __webpack_require__(61)
+var __vue_script__ = __webpack_require__(66)
 /* template */
-var __vue_template__ = __webpack_require__(62)
+var __vue_template__ = __webpack_require__(67)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -47879,17 +48056,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 59 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(60);
+var content = __webpack_require__(65);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(3)("4e7bd74e", content, false, {});
+var update = __webpack_require__(2)("4e7bd74e", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -47905,10 +48082,10 @@ if(false) {
 }
 
 /***/ }),
-/* 60 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(2)(false);
+exports = module.exports = __webpack_require__(1)(false);
 // imports
 
 
@@ -47919,7 +48096,7 @@ exports.push([module.i, "\n.action-link[data-v-89c53f18] {\n    cursor: pointer;
 
 
 /***/ }),
-/* 61 */
+/* 66 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48245,7 +48422,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 });
 
 /***/ }),
-/* 62 */
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -48620,7 +48797,7 @@ if (false) {
 }
 
 /***/ }),
-/* 63 */
+/* 68 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

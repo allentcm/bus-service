@@ -16,7 +16,7 @@ class BusController extends Controller
     public function all(Request $request)
     {
         $user = $request->user();
-
+        // make sure the user get his own buses
         return $user->buses;
     }
 
@@ -49,6 +49,8 @@ class BusController extends Controller
      */
     public function update(RegisterBus $request, $id)
     {
+        $bus = Bus::find($id);
+        $this->authorize('update', $bus);
         // make sure the user own the bus
         $user = $request->user();
         $bus = $user->buses()->where('id', $id)->first();
@@ -68,13 +70,16 @@ class BusController extends Controller
     public function destroy(Request $request, $id)
     {
         $bus = Bus::find($id);
+        $this->authorize('delete', $bus);
+        // make sure the user own the bus
+        $user = $request->user();
+        $bus = $user->buses()->where('id', $id)->first();
         if ($bus == null) {
             return [
                 'error' => 'Item not found'
             ];
         }
         $bus->delete();
-        return $bus->delete();
     }
 
 }
