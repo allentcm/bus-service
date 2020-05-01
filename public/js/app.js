@@ -45394,17 +45394,164 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
             latitude: 0.00,
             longitude: 0.00,
-            busStops: []
+            buses: [],
+            busStops: [],
+            services: [],
+            currentBusStop: [],
+            currentBusStopDesc: '',
+            form: {
+                bus: [],
+                errors: [],
+                name: '',
+                busy: false
+            },
+            registerOn: false,
+            selectedService: []
         };
     },
     mounted: function mounted() {
         console.log('Component mounted.');
+        this.getBuses();
+        this.getGeolocation();
     },
 
 
@@ -45421,17 +45568,19 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                     _this.longitude = position.coords.longitude;
                 });
             }
+
+            this.getBusStops();
         },
 
 
         /**
          * Get all the bus stops in SG.
          */
-        getBusStops: function getBusStops() {
+        getBuses: function getBuses() {
             var _this2 = this;
 
-            axios.get('/api/bus-stops').then(function (response) {
-                _this2.busStops = response.data;
+            axios.get('/api/buses').then(function (response) {
+                _this2.buses = response.data;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -45439,30 +45588,120 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
         /**
-         * Show the form for creating new clients.
+         * Get all the bus stops in SG.
          */
-        showCreateClientForm: function showCreateClientForm() {
-            $('#modal-create-client').modal('show');
+        getBusStops: function getBusStops() {
+            var _this3 = this;
+
+            axios.get('/api/bus-stops/nearby?latitude=' + this.latitude + '&longitude=' + this.longitude).then(function (response) {
+                _this3.busStops = response.data;
+            }).catch(function (error) {
+                console.log(error);
+            });
         },
 
 
         /**
-         * Create a new OAuth client for the user.
+         * Get all the bus services for the target bus stop.
          */
-        store: function store() {
-            this.persistClient('post', '/oauth/clients', this.createForm, '#modal-create-client');
+        getBusServices: function getBusServices(busStopCode) {
+            var _this4 = this;
+
+            axios.get('/api/bus-stops/' + busStopCode + '/services').then(function (response) {
+                _this4.services = response.data;
+            }).catch(function (error) {
+                console.log(error);
+            });
         },
 
 
         /**
-         * Edit the given client.
+         * Show the current bus stop bus services.
          */
-        edit: function edit(client) {
-            this.editForm.id = client.id;
-            this.editForm.name = client.name;
-            this.editForm.redirect = client.redirect;
+        showBusServices: function showBusServices(index) {
+            $('#modal-bus-services').modal('show');
+            this.currentBusStop = this.busStops[index];
+            this.currentBusStopDesc = this.currentBusStop.bus_stop_code + ' : ' + this.currentBusStop.road_name + ', ' + this.currentBusStop.description;
+            this.getBusServices(this.currentBusStop.bus_stop_code);
+        },
 
-            $('#modal-edit-client').modal('show');
+
+        /**
+         * Hide the current bus stop bus services.
+         */
+        closeBusServices: function closeBusServices() {
+            $('#modal-bus-services').modal('hide');
+        },
+
+
+        /**
+         * Show the current bus stop bus services.
+         */
+        showEditBus: function showEditBus(index) {
+            this.selectedBus = this.buses[index];
+            $('#modal-edit-service').modal('show');
+        },
+
+
+        /**
+         * Hide the current bus stop bus services.
+         */
+        closeEditBus: function closeEditBus() {
+            $('#modal-edit-service').modal('hide');
+            this.editForm.name = '';
+            this.editForm.busy = false;
+            this.editForm.errors = [];
+            this.editForm.bus = [];
+        },
+
+
+        /**
+         * Show the registration form for bus service.
+         */
+        showRegisterService: function showRegisterService(index) {
+            this.closeBusServices();
+            this.selectedService = this.services[index];
+            $('#modal-register-service').modal('show');
+        },
+
+
+        /**
+         * Hide the registration form for bus service.
+         */
+        closeRegisterService: function closeRegisterService() {
+            $('#modal-register-service').modal('hide');
+            this.form.name = '';
+            this.form.busy = false;
+            this.form.errors = [];
+            this.form.bus = [];
+        },
+
+
+        /**
+         * Show the form to register bus service.
+         */
+        registerBusService: function registerBusService() {
+            var _this5 = this;
+
+            this.form.bus.service_no = this.selectedService.service_no;
+            this.form.bus.operator = this.selectedService.operator;
+            this.form.bus.bus_stop_code = this.currentBusStop.bus_stop_code;
+            this.form.bus = this.selectedService.next_bus;
+            this.form.errors = [];
+            this.form.busy = true;
+            axios['post']('/api/buses', this.form).then(function (response) {
+                _this5.form.name = '';
+                _this5.form.busy = false;
+                _this5.form.errors = [];
+                _this5.form.bus = [];
+            }).catch(function (error) {
+                if (_typeof(error.response.data) === 'object') {
+                    _this5.form.errors = _.flatten(_.toArray(error.response.data));
+                } else {
+                    _this5.form.errors = ['Something went wrong. Please try again.'];
+                }
+                _this5.form.busy = false;
+            });
         },
 
 
@@ -45475,39 +45714,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
         /**
-         * Persist the client to storage using the given form.
-         */
-        persistClient: function persistClient(method, uri, form, modal) {
-            var _this3 = this;
-
-            form.errors = [];
-
-            axios[method](uri, form).then(function (response) {
-                _this3.getClients();
-
-                form.name = '';
-                form.redirect = '';
-                form.errors = [];
-
-                $(modal).modal('hide');
-            }).catch(function (error) {
-                if (_typeof(error.response.data) === 'object') {
-                    form.errors = _.flatten(_.toArray(error.response.data));
-                } else {
-                    form.errors = ['Something went wrong. Please try again.'];
-                }
-            });
-        },
-
-
-        /**
          * Destroy the given client.
          */
         destroy: function destroy(client) {
-            var _this4 = this;
+            var _this6 = this;
 
             axios.delete('/oauth/clients/' + client.id).then(function (response) {
-                _this4.getClients();
+                _this6.getClients();
             });
         }
     }
@@ -45524,6 +45737,66 @@ var render = function() {
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row" }, [
       _c("div", { staticClass: "col-md-8 col-md-offset-2" }, [
+        _c("div", { staticClass: "panel panel-default" }, [
+          _c("div", { staticClass: "panel-heading" }, [
+            _c(
+              "div",
+              {
+                staticStyle: {
+                  display: "flex",
+                  "justify-content": "space-between",
+                  "align-items": "center"
+                }
+              },
+              [
+                _c("span", [
+                  _vm._v(
+                    "\n                            My Buses\n                        "
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  { staticClass: "action-link", on: { click: _vm.getBuses } },
+                  [
+                    _vm._v(
+                      "\n                            Refresh\n                        "
+                    )
+                  ]
+                )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c(
+            "ul",
+            { staticClass: "list-group" },
+            _vm._l(_vm.buses, function(bus, index) {
+              return _c("li", { staticClass: "list-group-item" }, [
+                _c("p", [_vm._v("Name: " + _vm._s(bus.name))]),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "action-link",
+                    on: {
+                      click: function($event) {
+                        return _vm.showEditBus(index)
+                      }
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                            Edit\n                        "
+                    )
+                  ]
+                )
+              ])
+            }),
+            0
+          )
+        ]),
+        _vm._v(" "),
         _c("div", { staticClass: "panel panel-default" }, [
           _c("div", { staticClass: "panel-heading" }, [
             _c(
@@ -45602,11 +45875,18 @@ var render = function() {
           _c(
             "ul",
             { staticClass: "list-group" },
-            _vm._l(_vm.busStops, function(busStop) {
+            _vm._l(_vm.busStops, function(busStop, index) {
               return _c("li", { staticClass: "list-group-item" }, [
                 _c("p", [_vm._v("Code: " + _vm._s(busStop.bus_stop_code))]),
                 _vm._v(" "),
-                _c("p", [_vm._v("Road Name: " + _vm._s(busStop.road_name))]),
+                _c("p", [
+                  _vm._v(
+                    "Location: " +
+                      _vm._s(busStop.road_name) +
+                      ", " +
+                      _vm._s(busStop.description)
+                  )
+                ]),
                 _vm._v(" "),
                 _c("p", [
                   _vm._v(
@@ -45615,17 +45895,496 @@ var render = function() {
                       ", " +
                       _vm._s(busStop.longitude)
                   )
-                ])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "action-link",
+                    on: {
+                      click: function($event) {
+                        return _vm.showBusServices(index)
+                      }
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                            Sevices\n                        "
+                    )
+                  ]
+                )
               ])
             }),
             0
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "modal fade",
+              attrs: {
+                id: "modal-bus-services",
+                tabindex: "-1",
+                role: "dialog"
+              }
+            },
+            [
+              _c(
+                "div",
+                { staticClass: "modal-dialog", attrs: { role: "document" } },
+                [
+                  _c("div", { staticClass: "modal-content" }, [
+                    _c("div", { staticClass: "modal-header" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "close",
+                          attrs: { type: "button ", "aria-hidden": "true" },
+                          on: {
+                            click: function($event) {
+                              return _vm.closeBusServices()
+                            }
+                          }
+                        },
+                        [_vm._v("×")]
+                      ),
+                      _vm._v(" "),
+                      _c("h4", { staticClass: "modal-title" }, [
+                        _vm._v(
+                          "Bus Services for " + _vm._s(_vm.currentBusStopDesc)
+                        )
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "ul",
+                      { staticClass: "list-group" },
+                      _vm._l(_vm.services, function(service, index) {
+                        return _c("li", { staticClass: "list-group-item" }, [
+                          _c(
+                            "div",
+                            {
+                              staticStyle: {
+                                display: "flex",
+                                "justify-content": "space-between",
+                                "align-items": "center"
+                              }
+                            },
+                            [
+                              _c("span", [
+                                _vm._v(
+                                  "\n                                        Bus No: " +
+                                    _vm._s(service.service_no) +
+                                    "\n                                    "
+                                )
+                              ]),
+                              _vm._v(" "),
+                              _c(
+                                "a",
+                                {
+                                  staticClass: "action-link",
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.showRegisterService(index)
+                                    }
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    "\n                                        Register\n                                    "
+                                  )
+                                ]
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c("p", [
+                            _vm._v(
+                              "Arrival Time: " +
+                                _vm._s(service.next_bus.estimated_arrival)
+                            )
+                          ])
+                        ])
+                      }),
+                      0
+                    ),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "modal-footer" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-secondary",
+                          attrs: { type: "button" },
+                          on: {
+                            click: function($event) {
+                              return _vm.closeBusServices()
+                            }
+                          }
+                        },
+                        [_vm._v("Close")]
+                      )
+                    ])
+                  ])
+                ]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "modal fade",
+              attrs: {
+                id: "modal-register-service",
+                tabindex: "-1",
+                role: "dialog"
+              }
+            },
+            [
+              _c(
+                "div",
+                { staticClass: "modal-dialog", attrs: { role: "document" } },
+                [
+                  _c("div", { staticClass: "modal-content" }, [
+                    _c("div", { staticClass: "modal-header" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "close",
+                          attrs: { type: "button ", "aria-hidden": "true" },
+                          on: {
+                            click: function($event) {
+                              return _vm.closeRegisterService()
+                            }
+                          }
+                        },
+                        [_vm._v("×")]
+                      ),
+                      _vm._v(" "),
+                      _c("h4", { staticClass: "modal-title" }, [
+                        _vm._v(
+                          "Register for Bus No " +
+                            _vm._s(_vm.selectedService.service_no)
+                        )
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "modal-body" }, [
+                      _vm.form.errors.length > 0
+                        ? _c("div", { staticClass: "alert alert-danger" }, [
+                            _vm._m(0),
+                            _vm._v(" "),
+                            _c("br"),
+                            _vm._v(" "),
+                            _c(
+                              "ul",
+                              _vm._l(_vm.form.errors, function(error) {
+                                return _c("li", [
+                                  _vm._v(
+                                    "\n                                        " +
+                                      _vm._s(error) +
+                                      "\n                                    "
+                                  )
+                                ])
+                              }),
+                              0
+                            )
+                          ])
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _c(
+                        "form",
+                        {
+                          staticClass: "form-horizontal",
+                          attrs: { role: "form" },
+                          on: {
+                            submit: function($event) {
+                              $event.preventDefault()
+                            }
+                          }
+                        },
+                        [
+                          _c("div", { staticClass: "form-group" }, [
+                            _c(
+                              "label",
+                              {
+                                staticClass: "col-sm-4 control-label",
+                                attrs: { for: "name" }
+                              },
+                              [_vm._v("Name")]
+                            ),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "col-sm-8" }, [
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.form.name,
+                                    expression: "form.name"
+                                  }
+                                ],
+                                staticClass: "form-control",
+                                attrs: { type: "text", id: "name" },
+                                domProps: { value: _vm.form.name },
+                                on: {
+                                  input: function($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      _vm.form,
+                                      "name",
+                                      $event.target.value
+                                    )
+                                  }
+                                }
+                              })
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "form-group" }, [
+                            _c(
+                              "div",
+                              { staticClass: "col-sm-offset-4 col-sm-8" },
+                              [
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-primary",
+                                    attrs: {
+                                      type: "button",
+                                      disabled: _vm.form.busy
+                                    },
+                                    on: { click: _vm.registerBusService }
+                                  },
+                                  [
+                                    _vm.form.busy
+                                      ? _c("i", {
+                                          staticClass:
+                                            "fa fa-btn fa-spinner fa-spin",
+                                          attrs: { "aria-hidden": "true" }
+                                        })
+                                      : _vm._e(),
+                                    _vm._v("Register")
+                                  ]
+                                )
+                              ]
+                            )
+                          ])
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "modal-footer" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-secondary",
+                          attrs: { type: "button" },
+                          on: {
+                            click: function($event) {
+                              return _vm.closeRegisterService()
+                            }
+                          }
+                        },
+                        [_vm._v("Close")]
+                      )
+                    ])
+                  ])
+                ]
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "modal fade",
+              attrs: {
+                id: "modal-edit-service",
+                tabindex: "-1",
+                role: "dialog"
+              }
+            },
+            [
+              _c(
+                "div",
+                { staticClass: "modal-dialog", attrs: { role: "document" } },
+                [
+                  _c("div", { staticClass: "modal-content" }, [
+                    _c("div", { staticClass: "modal-header" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "close",
+                          attrs: { type: "button ", "aria-hidden": "true" },
+                          on: {
+                            click: function($event) {
+                              return _vm.closeRegisterService()
+                            }
+                          }
+                        },
+                        [_vm._v("×")]
+                      ),
+                      _vm._v(" "),
+                      _c("h4", { staticClass: "modal-title" }, [
+                        _vm._v("Edit bus")
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "modal-body" }, [
+                      _vm.form.errors.length > 0
+                        ? _c("div", { staticClass: "alert alert-danger" }, [
+                            _vm._m(1),
+                            _vm._v(" "),
+                            _c("br"),
+                            _vm._v(" "),
+                            _c(
+                              "ul",
+                              _vm._l(_vm.editForm.errors, function(error) {
+                                return _c("li", [
+                                  _vm._v(
+                                    "\n                                        " +
+                                      _vm._s(error) +
+                                      "\n                                    "
+                                  )
+                                ])
+                              }),
+                              0
+                            )
+                          ])
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _c(
+                        "form",
+                        {
+                          staticClass: "form-horizontal",
+                          attrs: { role: "form" },
+                          on: {
+                            submit: function($event) {
+                              $event.preventDefault()
+                            }
+                          }
+                        },
+                        [
+                          _c("div", { staticClass: "form-group" }, [
+                            _c(
+                              "label",
+                              {
+                                staticClass: "col-sm-4 control-label",
+                                attrs: { for: "name" }
+                              },
+                              [_vm._v("Name")]
+                            ),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "col-sm-8" }, [
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.editForm.name,
+                                    expression: "editForm.name"
+                                  }
+                                ],
+                                staticClass: "form-control",
+                                attrs: { type: "text", id: "name" },
+                                domProps: { value: _vm.editForm.name },
+                                on: {
+                                  input: function($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      _vm.editForm,
+                                      "name",
+                                      $event.target.value
+                                    )
+                                  }
+                                }
+                              })
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "form-group" }, [
+                            _c(
+                              "div",
+                              { staticClass: "col-sm-offset-4 col-sm-8" },
+                              [
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-primary",
+                                    attrs: {
+                                      type: "button",
+                                      disabled: _vm.editForm.busy
+                                    },
+                                    on: { click: _vm.registerBusService }
+                                  },
+                                  [
+                                    _vm.editForm.busy
+                                      ? _c("i", {
+                                          staticClass:
+                                            "fa fa-btn fa-spinner fa-spin",
+                                          attrs: { "aria-hidden": "true" }
+                                        })
+                                      : _vm._e(),
+                                    _vm._v("Register")
+                                  ]
+                                )
+                              ]
+                            )
+                          ])
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "modal-footer" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-secondary",
+                          attrs: { type: "button" },
+                          on: {
+                            click: function($event) {
+                              return _vm.closeRegisterService()
+                            }
+                          }
+                        },
+                        [_vm._v("Close")]
+                      )
+                    ])
+                  ])
+                ]
+              )
+            ]
           )
         ])
       ])
     ])
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", [
+      _c("strong", [_vm._v("Whoops!")]),
+      _vm._v(" Something went wrong!")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", [
+      _c("strong", [_vm._v("Whoops!")]),
+      _vm._v(" Something went wrong!")
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {

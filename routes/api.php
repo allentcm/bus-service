@@ -18,3 +18,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:api')->get('/bus-stops', 'BusStopController@all');
+Route::middleware('auth:api')->get('/bus-stops/nearby', 'BusStopController@nearby');
+Route::middleware('auth:api')->get('/bus-stops/{code}/services', 'BusStopController@services');
+Route::middleware('auth:api')->get('/bus-stops/refresh', 'BusStopController@refresh');
+
+Route::middleware('auth:api')->get('/buses', 'BusController@all');
+Route::middleware('auth:api')->post('/buses', 'BusController@store');

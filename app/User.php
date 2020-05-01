@@ -27,4 +27,11 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+     * A user has many buses
+     */
+    public function buses() {
+        return $this->hasMany('App\Bus');
+    }
 }
