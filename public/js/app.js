@@ -45527,6 +45527,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -45539,6 +45544,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             currentBusStop: [],
             currentBusStopDesc: '',
             form: {
+                bus: [],
+                errors: [],
+                name: '',
+                busy: false
+            },
+            editForm: {
                 bus: [],
                 errors: [],
                 name: '',
@@ -45590,11 +45601,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         /**
          * Get all the bus stops in SG.
          */
-        getBusStops: function getBusStops() {
+        populateBusStops: function populateBusStops() {
             var _this3 = this;
 
-            axios.get('/api/bus-stops/nearby?latitude=' + this.latitude + '&longitude=' + this.longitude).then(function (response) {
+            axios.get('/api/bus-stops/').then(function (response) {
                 _this3.busStops = response.data;
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+
+
+        /**
+         * Get all the bus stops by proximity.
+         */
+        getBusStops: function getBusStops() {
+            var _this4 = this;
+
+            axios.get('/api/bus-stops/nearby?latitude=' + this.latitude + '&longitude=' + this.longitude).then(function (response) {
+                _this4.busStops = response.data;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -45605,10 +45630,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * Get all the bus services for the target bus stop.
          */
         getBusServices: function getBusServices(busStopCode) {
-            var _this4 = this;
+            var _this5 = this;
 
             axios.get('/api/bus-stops/' + busStopCode + '/services').then(function (response) {
-                _this4.services = response.data;
+                _this5.services = response.data;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -45639,6 +45664,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          */
         showEditBus: function showEditBus(index) {
             this.selectedBus = this.buses[index];
+            this.editForm.name = this.selectedBus.name;
             $('#modal-edit-service').modal('show');
         },
 
@@ -45652,6 +45678,32 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.editForm.busy = false;
             this.editForm.errors = [];
             this.editForm.bus = [];
+        },
+
+
+        /**
+         * Show the form to register bus service.
+         */
+        updateBusService: function updateBusService() {
+            var _this6 = this;
+
+            this.editForm.bus = this.selectedBus;
+            this.editForm.errors = [];
+            this.editForm.busy = true;
+            axios['post']('/api/buses/' + this.selectedBus.id, this.editForm).then(function (response) {
+                _this6.editForm.name = '';
+                _this6.editForm.busy = false;
+                _this6.editForm.errors = [];
+                _this6.editForm.bus = [];
+                _this6.getBuses();
+            }).catch(function (error) {
+                if (_typeof(error.response.data) === 'object') {
+                    _this6.editForm.errors = _.flatten(_.toArray(error.response.data));
+                } else {
+                    _this6.editForm.errors = ['Something went wrong. Please try again.'];
+                }
+                _this6.editForm.busy = false;
+            });
         },
 
 
@@ -45681,7 +45733,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * Show the form to register bus service.
          */
         registerBusService: function registerBusService() {
-            var _this5 = this;
+            var _this7 = this;
 
             this.form.bus.service_no = this.selectedService.service_no;
             this.form.bus.operator = this.selectedService.operator;
@@ -45690,37 +45742,30 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             this.form.errors = [];
             this.form.busy = true;
             axios['post']('/api/buses', this.form).then(function (response) {
-                _this5.form.name = '';
-                _this5.form.busy = false;
-                _this5.form.errors = [];
-                _this5.form.bus = [];
+                _this7.form.name = '';
+                _this7.form.busy = false;
+                _this7.form.errors = [];
+                _this7.form.bus = [];
+                _this7.getBuses();
             }).catch(function (error) {
                 if (_typeof(error.response.data) === 'object') {
-                    _this5.form.errors = _.flatten(_.toArray(error.response.data));
+                    _this7.form.errors = _.flatten(_.toArray(error.response.data));
                 } else {
-                    _this5.form.errors = ['Something went wrong. Please try again.'];
+                    _this7.form.errors = ['Something went wrong. Please try again.'];
                 }
-                _this5.form.busy = false;
+                _this7.form.busy = false;
             });
-        },
-
-
-        /**
-         * Update the client being edited.
-         */
-        update: function update() {
-            this.persistClient('put', '/oauth/clients/' + this.editForm.id, this.editForm, '#modal-edit-client');
         },
 
 
         /**
          * Destroy the given client.
          */
-        destroy: function destroy(client) {
-            var _this6 = this;
+        destroy: function destroy(bus) {
+            var _this8 = this;
 
-            axios.delete('/oauth/clients/' + client.id).then(function (response) {
-                _this6.getClients();
+            axios.delete('/api/buses/' + bus.id).then(function (response) {
+                _this8.getBuses();
             });
         }
     }
@@ -45790,6 +45835,23 @@ var render = function() {
                       "\n                            Edit\n                        "
                     )
                   ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "action-link",
+                    on: {
+                      click: function($event) {
+                        return _vm.destroy(bus)
+                      }
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                            Delete\n                        "
+                    )
+                  ]
                 )
               ])
             }),
@@ -45855,6 +45917,19 @@ var render = function() {
                     "\n                            Bus Stops\n                        "
                   )
                 ]),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "action-link",
+                    on: { click: _vm.populateBusStops }
+                  },
+                  [
+                    _vm._v(
+                      "\n                            Populate\n                        "
+                    )
+                  ]
+                ),
                 _vm._v(" "),
                 _c(
                   "a",
@@ -46221,7 +46296,7 @@ var render = function() {
                           attrs: { type: "button ", "aria-hidden": "true" },
                           on: {
                             click: function($event) {
-                              return _vm.closeRegisterService()
+                              return _vm.closeEditBus()
                             }
                           }
                         },
@@ -46234,7 +46309,7 @@ var render = function() {
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "modal-body" }, [
-                      _vm.form.errors.length > 0
+                      _vm.editForm.errors.length > 0
                         ? _c("div", { staticClass: "alert alert-danger" }, [
                             _vm._m(1),
                             _vm._v(" "),
@@ -46320,7 +46395,7 @@ var render = function() {
                                       type: "button",
                                       disabled: _vm.editForm.busy
                                     },
-                                    on: { click: _vm.registerBusService }
+                                    on: { click: _vm.updateBusService }
                                   },
                                   [
                                     _vm.editForm.busy
@@ -46330,7 +46405,7 @@ var render = function() {
                                           attrs: { "aria-hidden": "true" }
                                         })
                                       : _vm._e(),
-                                    _vm._v("Register")
+                                    _vm._v("Update")
                                   ]
                                 )
                               ]
@@ -46348,7 +46423,7 @@ var render = function() {
                           attrs: { type: "button" },
                           on: {
                             click: function($event) {
-                              return _vm.closeRegisterService()
+                              return _vm.closeEditBus()
                             }
                           }
                         },

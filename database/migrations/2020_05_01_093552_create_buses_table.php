@@ -15,13 +15,11 @@ class CreateBusesTable extends Migration
     {
         Schema::create('buses', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('name');
             $table->integer('user_id')->unsigned()->nullable();
-            $table->foreign('user_id')->references('id')->on('buses')->onDelete('cascade');
-            $table->integer('bus_stop_id')->unsigned()->nullable();
+            $table->integer('bus_stop_code')->nullable();
             $table->string('service_no');
             $table->string('operator');
-            $table->string('direction');
-            $table->string('category');
             $table->string('origin_code');
             $table->string('destination_code');
             $table->timestamps();

@@ -24,3 +24,5 @@ Route::middleware('auth:api')->get('/bus-stops/refresh', 'BusStopController@refr
 
 Route::middleware('auth:api')->get('/buses', 'BusController@all');
 Route::middleware('auth:api')->post('/buses', 'BusController@store');
+Route::middleware('auth:api')->post('/buses/{id}', 'BusController@update');
+Route::middleware('auth:api')->delete('/buses/{id}', 'BusController@destroy');

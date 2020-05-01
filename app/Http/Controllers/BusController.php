@@ -41,4 +41,40 @@ class BusController extends Controller
         $user->buses()->save((object) $bus);
         return $user->buses;
     }
+
+    /**
+     * Update a bus for user
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function update(RegisterBus $request, $id)
+    {
+        // make sure the user own the bus
+        $user = $request->user();
+        $bus = $user->buses()->where('id', $id)->first();
+        $bus->name = $request->name;
+        $bus->save();
+        return $bus;
+    }
+
+    /**
+     * Destroy bus
+     *
+     * Delete the bus from database.
+     *
+     * @param int $id ID for the service
+     * @return Response
+     */
+    public function destroy(Request $request, $id)
+    {
+        $bus = Bus::find($id);
+        if ($bus == null) {
+            return [
+                'error' => 'Item not found'
+            ];
+        }
+        $bus->delete();
+        return $bus->delete();
+    }
+
 }

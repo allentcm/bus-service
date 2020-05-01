@@ -30,6 +30,9 @@
                             <a class="action-link" @click="showEditBus(index)">
                                 Edit
                             </a>
+                            <a class="action-link" @click="destroy(bus)">
+                                Delete
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -57,7 +60,9 @@
                             <span>
                                 Bus Stops
                             </span>
-
+                            <a class="action-link" @click="populateBusStops">
+                                Populate
+                            </a>
                             <a class="action-link" @click="getBusStops">
                                 Refresh
                             </a>
@@ -148,12 +153,12 @@
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                             <div class="modal-header">
-                                <button type="button " class="close" aria-hidden="true" @click="closeRegisterService()">&times;</button>
+                                <button type="button " class="close" aria-hidden="true" @click="closeEditBus()">&times;</button>
                                 <h4 class="modal-title">Edit bus</h4>
                             </div>
                             <div class="modal-body">
                                 <!-- Form Errors -->
-                                <div class="alert alert-danger" v-if="form.errors.length > 0">
+                                <div class="alert alert-danger" v-if="editForm.errors.length > 0">
                                     <p><strong>Whoops!</strong> Something went wrong!</p>
                                     <br>
                                     <ul>
@@ -172,13 +177,13 @@
                                     </div>
                                     <div class="form-group">
                                         <div class="col-sm-offset-4 col-sm-8">
-                                        <button type="button" class="btn btn-primary" :disabled="editForm.busy"  @click="registerBusService"><i class="fa fa-btn fa-spinner fa-spin" aria-hidden="true" v-if="editForm.busy"></i>Register</button>
+                                        <button type="button" class="btn btn-primary" :disabled="editForm.busy"  @click="updateBusService"><i class="fa fa-btn fa-spinner fa-spin" aria-hidden="true" v-if="editForm.busy"></i>Update</button>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" @click="closeRegisterService()">Close</button>
+                                <button type="button" class="btn btn-secondary" @click="closeEditBus()">Close</button>
                             </div>
                             </div>
                         </div>
@@ -201,6 +206,12 @@
                 currentBusStop: [],
                 currentBusStopDesc: '',
                 form: {
+                    bus: [],
+                    errors: [],
+                    name: '',
+                    busy: false
+                },
+                editForm: {
                     bus: [],
                     errors: [],
                     name: '',
@@ -249,6 +260,19 @@
             /**
              * Get all the bus stops in SG.
              */
+            populateBusStops() {
+                axios.get('/api/bus-stops/')
+                    .then(response => {
+                        this.busStops = response.data;
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    });
+            },
+
+            /**
+             * Get all the bus stops by proximity.
+             */
             getBusStops() {
                 axios.get('/api/bus-stops/nearby?latitude=' + this.latitude + '&longitude=' + this.longitude)
                     .then(response => {
@@ -296,6 +320,7 @@
              */
             showEditBus(index) {
                 this.selectedBus = this.buses[index];
+                this.editForm.name = this.selectedBus.name;
                 $('#modal-edit-service').modal('show');
             },
 
@@ -308,6 +333,31 @@
                 this.editForm.busy = false;
                 this.editForm.errors = [];
                 this.editForm.bus = [];
+            },
+
+            /**
+             * Show the form to register bus service.
+             */
+            updateBusService() {
+                this.editForm.bus = this.selectedBus;
+                this.editForm.errors = [];
+                this.editForm.busy = true;
+                axios['post']('/api/buses/' + this.selectedBus.id, this.editForm)
+                    .then(response => {
+                        this.editForm.name = '';
+                        this.editForm.busy = false;
+                        this.editForm.errors = [];
+                        this.editForm.bus = [];
+                        this.getBuses();
+                    })
+                    .catch(error => {
+                        if (typeof error.response.data === 'object') {
+                            this.editForm.errors = _.flatten(_.toArray(error.response.data));
+                        } else {
+                            this.editForm.errors = ['Something went wrong. Please try again.'];
+                        }
+                        this.editForm.busy = false;
+                    });
             },
 
             /**
@@ -346,6 +396,7 @@
                         this.form.busy = false;
                         this.form.errors = [];
                         this.form.bus = [];
+                        this.getBuses();
                     })
                     .catch(error => {
                         if (typeof error.response.data === 'object') {
@@ -358,22 +409,12 @@
             },
 
             /**
-             * Update the client being edited.
-             */
-            update() {
-                this.persistClient(
-                    'put', '/oauth/clients/' + this.editForm.id,
-                    this.editForm, '#modal-edit-client'
-                );
-            },
-
-            /**
              * Destroy the given client.
              */
-            destroy(client) {
-                axios.delete('/oauth/clients/' + client.id)
+            destroy(bus) {
+                axios.delete('/api/buses/' + bus.id)
                         .then(response => {
-                            this.getClients();
+                            this.getBuses();
                         });
             }
         }
