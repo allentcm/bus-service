@@ -5,12 +5,25 @@ namespace App\Http\Controllers;
 use App\Bus;
 use Illuminate\Http\Request;
 use App\Http\Requests\RegisterBus;
+use App\Repositories\BusRepository;
 
-class BusController extends Controller
+class BusController extends ApiController
 {
     /**
-     * Get all bus stops
+     * Create a new controller instance.
      *
+     * @return void
+     */
+    public function __construct(BusRepository $buses)
+    {
+        $this->buses = $buses;
+    }
+
+    /**
+     * Get all bus stops
+     * 
+     * @param Request $request
+     * @param int $id ID for the bus
      * @return \Illuminate\Http\Response
      */
     public function all(Request $request)
@@ -23,11 +36,13 @@ class BusController extends Controller
     /**
      * Add a bus for user
      *
+     * @param RegisterBus $request Request with form validation
      * @return \Illuminate\Http\Response
      */
     public function store(RegisterBus $request)
     {
         $user = $request->user();
+        // prepare bus attribute for creation
         $attributes = [
             'user_id' => $user->id,
             'bus_stop_code' => $request->bus['bus_stop_code'],
@@ -37,49 +52,57 @@ class BusController extends Controller
             'origin_code' => $request->bus['origin_code'],
             'destination_code' => $request->bus['destination_code'],
         ];
-        $bus = Bus::forceCreate($attributes);
-        $user->buses()->save((object) $bus);
-        return $user->buses;
+        // create user's bus
+        return $this->buses->create($user, $attributes);
     }
 
     /**
      * Update a bus for user
      *
+     * @param RegisterBus $request Request with form validation
+     * @param int $id ID for the bus
      * @return \Illuminate\Http\Response
      */
     public function update(RegisterBus $request, $id)
     {
+        // chekc if the bus exist
         $bus = Bus::find($id);
+        if ($bus == null) {
+            return $this->respondNotFound();
+        }
+        // check for user authorization
         $this->authorize('update', $bus);
-        // make sure the user own the bus
+        // update user's bus
         $user = $request->user();
-        $bus = $user->buses()->where('id', $id)->first();
-        $bus->name = $request->name;
-        $bus->save();
+        $bus = $this->buses->updateName($bus, $request->name);
+        if ($bus == null) {
+            return $this->respondNotFound();
+        }
         return $bus;
     }
 
     /**
-     * Destroy bus
-     *
      * Delete the bus from database.
-     *
-     * @param int $id ID for the service
-     * @return Response
+     * 
+     * @param Request $request
+     * @param int $id ID for the bus
+     * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $id)
     {
+        // chekc if the bus exist
         $bus = Bus::find($id);
-        $this->authorize('delete', $bus);
-        // make sure the user own the bus
-        $user = $request->user();
-        $bus = $user->buses()->where('id', $id)->first();
         if ($bus == null) {
-            return [
-                'error' => 'Item not found'
-            ];
+            return $this->respondNotFound();
         }
-        $bus->delete();
+        // check for user authorization
+        $this->authorize('delete', $bus);
+        // delete user's bus
+        if ($this->buses->delete($bus)) {
+            return $this->respondWithMessage();
+        } else {
+            return $this->respondWithError('Unable to delete bus');
+        }
     }
 
 }

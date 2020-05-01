@@ -176,7 +176,7 @@
              * Get all the bus stops in SG.
              */
             populateBusStops() {
-                axios.get('/api/bus-stops/')
+                axios.get('/api/bus-stops/refresh')
                     .then(response => {
                         this.busStops = response.data;
                     })
@@ -189,7 +189,7 @@
              * Get all the bus stops by proximity.
              */
             getBusStops() {
-                axios.get('/api/bus-stops/nearby?latitude=' + this.latitude + '&longitude=' + this.longitude)
+                axios.get('/api/bus-stops?latitude=' + this.latitude + '&longitude=' + this.longitude)
                     .then(response => {
                         this.busStops = response.data;
                     })

@@ -29,6 +29,7 @@ class RegisterBus extends FormRequest
             'name' => [
                 'required', 
                 'max:255',
+                'string',
                 Rule::unique('buses')->where(function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 })

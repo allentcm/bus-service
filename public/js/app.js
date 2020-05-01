@@ -45519,7 +45519,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         populateBusStops: function populateBusStops() {
             var _this2 = this;
 
-            axios.get('/api/bus-stops/').then(function (response) {
+            axios.get('/api/bus-stops/refresh').then(function (response) {
                 _this2.busStops = response.data;
             }).catch(function (error) {
                 console.log(error);
@@ -45533,7 +45533,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         getBusStops: function getBusStops() {
             var _this3 = this;
 
-            axios.get('/api/bus-stops/nearby?latitude=' + this.latitude + '&longitude=' + this.longitude).then(function (response) {
+            axios.get('/api/bus-stops?latitude=' + this.latitude + '&longitude=' + this.longitude).then(function (response) {
                 _this3.busStops = response.data;
             }).catch(function (error) {
                 console.log(error);
