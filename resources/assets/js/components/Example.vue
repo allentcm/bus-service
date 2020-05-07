@@ -124,6 +124,13 @@
                             </div>
                         </div>
                     </div>
+                    <div class="panel-footer">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <a class="action-link" @click="moreBusStops()">
+                                More
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -146,7 +153,8 @@
                     errors: []
                 },
                 registerOn: false,
-                selectedService: []
+                selectedService: [],
+                busStopPagination: {}
             };
         },
 
@@ -177,7 +185,7 @@
             populateBusStops() {
                 axios.get('/api/bus-stops/refresh')
                     .then(response => {
-                        this.busStops = response.data;
+                        this.busStops = response.data.entries;
                     })
                     .catch(error => {
                         console.log(error)
@@ -185,12 +193,34 @@
             },
 
             /**
-             * Get all the bus stops by proximity.
+             * Get pagination of the bus stops by proximity.
              */
             getBusStops() {
                 axios.get('/api/bus-stops?latitude=' + this.latitude + '&longitude=' + this.longitude)
                     .then(response => {
-                        this.busStops = response.data;
+                        this.busStops = response.data.entries;
+                        // get next page link
+                        this.busStopPagination.links = {next: response.data.meta.pagination.links.next};
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    });
+            },
+
+            /**
+             * Get more bus stops by proximity.
+             */
+            moreBusStops() {
+                axios.get(this.busStopPagination.links.next)
+                    .then(response => {
+                        if (this.busStops == null) {
+                            this.busStops = [];
+                            this.busStops = response.data.entries;
+                        } else {
+                            this.busStops = this.busStops.concat(response.data.entries);
+                        }
+                        // get next page link
+                        this.busStopPagination.links.next = response.data.meta.pagination.links.next;
                     })
                     .catch(error => {
                         console.log(error)
@@ -201,9 +231,9 @@
              * Get all the bus services for the target bus stop.
              */
             getBusServices(busStopCode) {
-                axios.get('/api/bus-stops/' + busStopCode + '/services')
+                axios.get('/api/services/' + busStopCode)
                     .then(response => {
-                        this.services = response.data;
+                        this.services = response.data.entries;
                     })
                     .catch(error => {
                         console.log(error)

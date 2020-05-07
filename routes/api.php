@@ -18,8 +18,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:api')->get('/bus-stops', 'BusStopController@all');
-Route::middleware('auth:api')->get('/bus-stops/{code}/services', 'BusStopController@services');
 Route::middleware('auth:api')->get('/bus-stops/refresh', 'BusStopController@refresh');
+
+Route::middleware(['auth:api', 'checkViewService'])->get('/services/{code}', 'ServiceController@services');
 
 Route::middleware('auth:api')->get('/buses', 'BusController@all');
 Route::middleware(['auth:api', 'checkBusFields'])->post('/buses', 'BusController@store');

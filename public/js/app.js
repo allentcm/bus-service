@@ -45469,6 +45469,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -45485,7 +45492,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
                 errors: []
             },
             registerOn: false,
-            selectedService: []
+            selectedService: [],
+            busStopPagination: {}
         };
     },
     mounted: function mounted() {
@@ -45519,7 +45527,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var _this2 = this;
 
             axios.get('/api/bus-stops/refresh').then(function (response) {
-                _this2.busStops = response.data;
+                _this2.busStops = response.data.entries;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -45527,13 +45535,36 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
         /**
-         * Get all the bus stops by proximity.
+         * Get pagination of the bus stops by proximity.
          */
         getBusStops: function getBusStops() {
             var _this3 = this;
 
             axios.get('/api/bus-stops?latitude=' + this.latitude + '&longitude=' + this.longitude).then(function (response) {
-                _this3.busStops = response.data;
+                _this3.busStops = response.data.entries;
+                // get next page link
+                _this3.busStopPagination.links = { next: response.data.meta.pagination.links.next };
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+
+
+        /**
+         * Get more bus stops by proximity.
+         */
+        moreBusStops: function moreBusStops() {
+            var _this4 = this;
+
+            axios.get(this.busStopPagination.links.next).then(function (response) {
+                if (_this4.busStops == null) {
+                    _this4.busStops = [];
+                    _this4.busStops = response.data.entries;
+                } else {
+                    _this4.busStops = _this4.busStops.concat(response.data.entries);
+                }
+                // get next page link
+                _this4.busStopPagination.links.next = response.data.meta.pagination.links.next;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -45544,10 +45575,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * Get all the bus services for the target bus stop.
          */
         getBusServices: function getBusServices(busStopCode) {
-            var _this4 = this;
+            var _this5 = this;
 
-            axios.get('/api/bus-stops/' + busStopCode + '/services').then(function (response) {
-                _this4.services = response.data;
+            axios.get('/api/services/' + busStopCode).then(function (response) {
+                _this5.services = response.data.entries;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -45599,7 +45630,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
          * Show the form to register bus service.
          */
         registerBusService: function registerBusService() {
-            var _this5 = this;
+            var _this6 = this;
 
             // prepare data for storing
             var data = {};
@@ -45610,17 +45641,17 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             data.origin_code = this.selectedService.next_bus.origin_code;
             data.destination_code = this.selectedService.next_bus.destination_code;
             axios['post']('/api/buses', data).then(function (response) {
-                _this5.form.name = '';
-                _this5.form.busy = false;
-                _this5.form.errors = [];
-                _this5.getBuses();
+                _this6.form.name = '';
+                _this6.form.busy = false;
+                _this6.form.errors = [];
+                _this6.getBuses();
             }).catch(function (error) {
                 if (_typeof(error.response.data) === 'object') {
-                    _this5.form.errors = _.flatten(_.toArray(error.response.data));
+                    _this6.form.errors = _.flatten(_.toArray(error.response.data));
                 } else {
-                    _this5.form.errors = ['Something went wrong. Please try again.'];
+                    _this6.form.errors = ['Something went wrong. Please try again.'];
                 }
-                _this5.form.busy = false;
+                _this6.form.busy = false;
             });
         }
     }
@@ -46048,7 +46079,38 @@ var render = function() {
                 ]
               )
             ]
-          )
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "panel-footer" }, [
+            _c(
+              "div",
+              {
+                staticStyle: {
+                  display: "flex",
+                  "justify-content": "space-between",
+                  "align-items": "center"
+                }
+              },
+              [
+                _c(
+                  "a",
+                  {
+                    staticClass: "action-link",
+                    on: {
+                      click: function($event) {
+                        return _vm.moreBusStops()
+                      }
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                            More\n                        "
+                    )
+                  ]
+                )
+              ]
+            )
+          ])
         ])
       ])
     ])

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\BusStop;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\Paginator;
 use App\Repositories\BusStopRepository;
+use App\Transformers\BusStopTransformer;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class BusStopController extends ApiController
 {
@@ -15,47 +18,57 @@ class BusStopController extends ApiController
      */
     public function __construct(BusStopRepository $busStops)
     {
+        parent::__construct();
+
         $this->busStops = $busStops;
+
+        $this->setTransformer(new BusStopTransformer());
     }
 
     /**
-     * Get all bus stops
+     * Get all bus stops base on user proximity
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return mixed
+     * @throws \Exception
      */
     public function all(Request $request)
     {
-        return $this->busStops->nearby($request->latitude, $request->longitude);
+        $nearestBusStops = $this->busStops->nearby($request->latitude, $request->longitude);
+        $paginator = $this->paginate($nearestBusStops, 10, request('page'), ['path' => request()->path()]);
+
+        return $this->respond($this->transform($paginator));
     }
 
     /**
-     * Delete all bus stops and repopulate
+     * Delete all bus stops and re-populate
      *
-     * @return \Illuminate\Http\Response
+     * @return mixed
+     * @throws \Exception
      */
     public function refresh()
     {
-        // check is bus stops already populated
-        if (BusStop::all()->count() > 0) {
-            // delete all bus stops
-            BusStop::truncate();
-            // get all the bus stops from LTA
-            $resut = $this->busStops->getBusStops();
-            // save all bus stops to DB
-            $this->busStops->persist($resut);
-        }
+        $busStops = $this->busStops->populate();
+        $paginator = $this->paginate($busStops, 10, request('page'), ['path' => request()->path()]);
 
-        return BusStop::all();
+        return $this->respond($this->transform($paginator));
     }
 
     /**
-     * Get bus stop's services
+     * Setup pagination for collection
      *
-     * @param string $code Code for the bust stop
-     * @return \Illuminate\Http\Response
+     * @param $items
+     * @param int $perPage
+     * @param null $page
+     * @param array $options
+     * @return LengthAwarePaginator
      */
-    public function services($code)
+    private function paginate($items, $perPage = 10, $page = null, $options = [])
     {
-        return $this->busStops->services($code);
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }

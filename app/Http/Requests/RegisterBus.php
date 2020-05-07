@@ -34,7 +34,7 @@ class RegisterBus extends FormRequest
                     $query->where('user_id', $user->id);
                 })
             ],
-            'bus_stop_code' => ['required', 'integer'],
+            'bus_stop_code' => ['required', 'alpha_num'],
             'service_no' => ['required', 'alpha_num'],
             'operator' => ['required', 'alpha_num'],
             'origin_code' => ['required', 'alpha_num'],

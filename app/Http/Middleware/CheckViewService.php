@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Validator;
 
-class CheckDeleteBus
+class CheckViewService
 {
     /**
      * Handle an incoming request.
@@ -17,7 +17,7 @@ class CheckDeleteBus
     public function handle($request, Closure $next)
     {
         $validator = Validator::make($request->route()->parameters, [
-            'id' => 'required|integer',
+            'code' => 'required|alpha_num',
         ]);
 
         if (count($request->all()) > 0) {

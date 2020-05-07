@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Bus;
-use App\Transformers\BusTransformer;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateBus;
 use App\Http\Requests\DeleteBus;
 use App\Http\Requests\RegisterBus;
 use App\Repositories\BusRepository;
+use App\Transformers\BusTransformer;
 
 class BusController extends ApiController
 {

@@ -29,7 +29,7 @@ class CheckBusFields
         if (count(array_diff($allowFiels, $fields)) > 0 ||
             count(array_diff($fields, $allowFiels)) > 0
         ) {
-            return abort(403);
+            return abort(403, trans('errors.wrong_parameters'));
         }
 
         return $next($request);

@@ -19,11 +19,9 @@ class BusStopRepository
     }
 
     /**
-     * Persist bus stops
+     * Get all the bus stop from LTA
      *
-     * @param array $busStops
-     * @return array All the bus stops from LTA
-     * @throws Exception
+     * @return array
      */
     public function getBusStops()
     {
@@ -50,24 +48,30 @@ class BusStopRepository
     }
 
     /**
-     * Persist bus stops
+     * Populate bus stops
      *
-     * @param array $busStops
-     * @throws Exception
+     * @return BusStop[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function persist(array $busStops)
+    public function populate()
     {
-        BusStop::insert($busStops);
+        // delete all bus stops
+        BusStop::truncate();
+        // get all the bus stops from LTA
+        $result = $this->getBusStops();
+        // save all bus stops to DB
+        BusStop::insert($result);
+
+        return BusStop::all();
     }
 
     /**
      * Get nearby bus stops
      *
-     * @param float $latitude Latitude for reference location
-     * @param float $longitude Longitude for reference location
-     * @return array Array for all the bus stops arranged according to proximity
+     * @param float $latitude
+     * @param float $longitude
+     * @return BusStop[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function nearby(float $latitude = 0.00, float $longitude = 0.00)
+    public function nearby($latitude = 0.00, $longitude = 0.00)
     {
         $busStops = BusStop::all();
         $result = $busStops->sort(function ($a, $b) use ($latitude, $longitude) {
@@ -78,8 +82,8 @@ class BusStopRepository
             }
             return ($distanceA < $distanceB) ? -1 : 1;
         });
-        $array = array_values($result->toArray());
-        return $array;
+
+        return $result;
     }
 
     /**
@@ -104,44 +108,5 @@ class BusStopRepository
         $res = 2 * asin(sqrt($val));
         $radius = 3958.756;
         return ($res * $radius);
-    }
-
-    /**
-     * Get bus stop's services
-     *
-     * @param string $code Code for the bust stop
-     * @param array All the bus services for this bus stop
-     */
-    public function services($code)
-    {
-        $client = new Client();
-        $res = $client->request('GET', $this->url . '/BusArrivalv2?BusStopCode=' . $code, [
-            'headers' => [
-                'AccountKey' => $this->appKey,
-                'Accept'     => 'application/json'
-            ]
-        ]);
-
-        $result = json_decode($res->getBody());
-        $collection = collect($result->Services);
-        $collection->transform(function ($item, $key) {
-            $array = (array) $item;
-            $newArray = [];
-            array_walk($array, function ($value, $key) use (&$newArray) {
-                if (is_object($value)) {
-                    $newValueArray = [];
-                    $valueArray = (array) $value;
-                    array_walk($valueArray, function ($value, $key) use (&$newValueArray) {
-                        $newValueArray[snake_case($key)] = $value;
-                    });
-                    $newArray[snake_case($key)] = $newValueArray;
-                } else {
-                    $newArray[snake_case($key)] = $value;
-                }
-            });
-            return $newArray;
-        });
-
-        return $collection->toArray();
     }
 }

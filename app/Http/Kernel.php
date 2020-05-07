@@ -60,5 +60,6 @@ class Kernel extends HttpKernel
         'checkBusFields' => Middleware\CheckBusFields::class,
         'checkUpdateBus' => Middleware\CheckUpdateBus::class,
         'checkDeleteBus' => Middleware\CheckDeleteBus::class,
+        'checkViewService' => Middleware\CheckViewService::class,
     ];
 }
