@@ -45480,10 +45480,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             currentBusStop: [],
             currentBusStopDesc: '',
             form: {
-                bus: [],
-                errors: [],
                 name: '',
-                busy: false
+                busy: false,
+                errors: []
             },
             registerOn: false,
             selectedService: []
@@ -45602,17 +45601,18 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         registerBusService: function registerBusService() {
             var _this5 = this;
 
-            this.form.bus = this.selectedService.next_bus;
-            this.form.bus.service_no = this.selectedService.service_no;
-            this.form.bus.operator = this.selectedService.operator;
-            this.form.bus.bus_stop_code = this.currentBusStop.bus_stop_code;
-            this.form.errors = [];
-            this.form.busy = true;
-            axios['post']('/api/buses', this.form).then(function (response) {
+            // prepare data for storing
+            var data = {};
+            data.name = this.form.name;
+            data.bus_stop_code = this.currentBusStop.bus_stop_code;
+            data.service_no = this.selectedService.service_no;
+            data.operator = this.selectedService.operator;
+            data.origin_code = this.selectedService.next_bus.origin_code;
+            data.destination_code = this.selectedService.next_bus.destination_code;
+            axios['post']('/api/buses', data).then(function (response) {
                 _this5.form.name = '';
                 _this5.form.busy = false;
                 _this5.form.errors = [];
-                _this5.form.bus = [];
                 _this5.getBuses();
             }).catch(function (error) {
                 if (_typeof(error.response.data) === 'object') {
@@ -46267,11 +46267,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             latitude: 0.00,
             longitude: 0.00,
             buses: [],
+            selectedBus: {},
             editForm: {
-                bus: [],
-                errors: [],
                 name: '',
-                busy: false
+                busy: false,
+                errors: []
             }
         };
     },
@@ -46289,7 +46289,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
             var _this = this;
 
             axios.get('/api/buses').then(function (response) {
-                _this.buses = response.data;
+                _this.buses = response.data.entries;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -46324,14 +46324,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         updateBusService: function updateBusService() {
             var _this2 = this;
 
-            this.editForm.bus = this.selectedBus;
-            this.editForm.errors = [];
-            this.editForm.busy = true;
-            axios['post']('/api/buses/' + this.selectedBus.id, this.editForm).then(function (response) {
+            // prepare data for storing
+            var data = {};
+            data.name = this.editForm.name;
+            axios['post']('/api/buses/' + this.selectedBus.id, data).then(function (response) {
                 _this2.editForm.name = '';
                 _this2.editForm.busy = false;
                 _this2.editForm.errors = [];
-                _this2.editForm.bus = [];
                 _this2.getBuses();
             }).catch(function (error) {
                 if (_typeof(error.response.data) === 'object') {

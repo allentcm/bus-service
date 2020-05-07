@@ -92,11 +92,11 @@
                 latitude: 0.00,
                 longitude: 0.00,
                 buses: [],
+                selectedBus: {},
                 editForm: {
-                    bus: [],
-                    errors: [],
                     name: '',
-                    busy: false
+                    busy: false,
+                    errors: []
                 },
             };
         },
@@ -113,7 +113,7 @@
             getBuses() {
                 axios.get('/api/buses')
                     .then(response => {
-                        this.buses = response.data;
+                        this.buses = response.data.entries;
                     })
                     .catch(error => {
                         console.log(error)
@@ -144,15 +144,14 @@
              * Show the form to register bus service.
              */
             updateBusService() {
-                this.editForm.bus = this.selectedBus;
-                this.editForm.errors = [];
-                this.editForm.busy = true;
-                axios['post']('/api/buses/' + this.selectedBus.id, this.editForm)
+                // prepare data for storing
+                let data = {};
+                data.name = this.editForm.name;
+                axios['post']('/api/buses/' + this.selectedBus.id, data)
                     .then(response => {
                         this.editForm.name = '';
                         this.editForm.busy = false;
                         this.editForm.errors = [];
-                        this.editForm.bus = [];
                         this.getBuses();
                     })
                     .catch(error => {

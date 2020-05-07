@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Bus;
+use App\Transformers\BusTransformer;
 use Illuminate\Http\Request;
+use App\Http\Requests\UpdateBus;
+use App\Http\Requests\DeleteBus;
 use App\Http\Requests\RegisterBus;
 use App\Repositories\BusRepository;
 
@@ -16,87 +19,85 @@ class BusController extends ApiController
      */
     public function __construct(BusRepository $buses)
     {
+        parent::__construct();
+
         $this->buses = $buses;
+
+        $this->setTransformer(new BusTransformer());
     }
 
     /**
-     * Get all bus stops
-     * 
+     * Get all bus belong to a user
+     *
      * @param Request $request
-     * @param int $id ID for the bus
-     * @return \Illuminate\Http\Response
+     * @return mixed
+     * @throws \Exception
      */
     public function all(Request $request)
     {
         $user = $request->user();
         // make sure the user get his own buses
-        return $user->buses;
+        return $this->respond($this->transform($user->buses));
     }
 
     /**
      * Add a bus for user
      *
-     * @param RegisterBus $request Request with form validation
-     * @return \Illuminate\Http\Response
+     * @param RegisterBus $request
+     * @return mixed
+     * @throws \Exception
      */
     public function store(RegisterBus $request)
     {
-        $user = $request->user();
-        // prepare bus attribute for creation
-        $attributes = [
-            'user_id' => $user->id,
-            'bus_stop_code' => $request->bus['bus_stop_code'],
-            'service_no' => $request->bus['service_no'],
-            'operator' => $request->bus['operator'],
-            'name' => $request->name,
-            'origin_code' => $request->bus['origin_code'],
-            'destination_code' => $request->bus['destination_code'],
-        ];
         // create user's bus
-        return $this->buses->create($user, $attributes);
+        $bus = $this->buses->create($request->user(), $request->all());
+        if ($bus != null) {
+            return $this->respond($this->transform($bus));
+        } else {
+            return $this->respondWithError('Unable to create bus');
+        }
     }
 
     /**
      * Update a bus for user
      *
-     * @param RegisterBus $request Request with form validation
-     * @param int $id ID for the bus
-     * @return \Illuminate\Http\Response
+     * @param UpdateBus $request
+     * @param $id
+     * @return mixed
+     * @throws \Exception
      */
-    public function update(RegisterBus $request, $id)
+    public function update(UpdateBus $request, $id)
     {
         // chekc if the bus exist
         $bus = Bus::find($id);
         if ($bus == null) {
             return $this->respondNotFound();
         }
-        // check for user authorization
-        $this->authorize('update', $bus);
-        // update user's bus
-        $user = $request->user();
+
         $bus = $this->buses->updateName($bus, $request->name);
-        if ($bus == null) {
-            return $this->respondNotFound();
+        if ($bus != null) {
+            return $this->respond($this->transform($bus));
+        } else {
+            return $this->respondWithError('Unable to create bus');
         }
-        return $bus;
     }
 
     /**
-     * Delete the bus from database.
-     * 
-     * @param Request $request
-     * @param int $id ID for the bus
-     * @return \Illuminate\Http\Response
+     * Delete the bus from database
+     *
+     * @param DeleteBus $request
+     * @param $id
+     * @return mixed
+     * @throws \Exception
      */
-    public function destroy(Request $request, $id)
+    public function destroy(DeleteBus $request, $id)
     {
-        // chekc if the bus exist
+        // check if the bus exist
         $bus = Bus::find($id);
         if ($bus == null) {
             return $this->respondNotFound();
         }
-        // check for user authorization
-        $this->authorize('delete', $bus);
+
         // delete user's bus
         if ($this->buses->delete($bus)) {
             return $this->respondWithMessage();

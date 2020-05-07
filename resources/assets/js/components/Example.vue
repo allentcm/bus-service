@@ -141,13 +141,12 @@
                 currentBusStop: [],
                 currentBusStopDesc: '',
                 form: {
-                    bus: [],
-                    errors: [],
                     name: '',
-                    busy: false
+                    busy: false,
+                    errors: []
                 },
                 registerOn: false,
-                selectedService: [],
+                selectedService: []
             };
         },
 
@@ -254,18 +253,19 @@
              * Show the form to register bus service.
              */
             registerBusService() {
-                this.form.bus = this.selectedService.next_bus;
-                this.form.bus.service_no = this.selectedService.service_no;
-                this.form.bus.operator = this.selectedService.operator;
-                this.form.bus.bus_stop_code = this.currentBusStop.bus_stop_code;
-                this.form.errors = [];
-                this.form.busy = true;
-                axios['post']('/api/buses', this.form)
+                // prepare data for storing
+                let data = {};
+                data.name = this.form.name;
+                data.bus_stop_code = this.currentBusStop.bus_stop_code;
+                data.service_no = this.selectedService.service_no;
+                data.operator = this.selectedService.operator;
+                data.origin_code = this.selectedService.next_bus.origin_code;
+                data.destination_code = this.selectedService.next_bus.destination_code;
+                axios['post']('/api/buses', data)
                     .then(response => {
                         this.form.name = '';
                         this.form.busy = false;
                         this.form.errors = [];
-                        this.form.bus = [];
                         this.getBuses();
                     })
                     .catch(error => {

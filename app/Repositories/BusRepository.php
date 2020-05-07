@@ -8,28 +8,27 @@ use App\User;
 class BusRepository
 {
     /**
-     * Create bus
+     * Create bus for user
      *
      * @param User $user
-     * @return Bus
-     * @throws Exception
+     * @param array $attributes
+     * @return mixed
      */
     public function create(User $user, array $attributes)
     {
-        $bus = Bus::forceCreate($attributes);
-        $user->buses()->save((object) $bus);
-        return $user->buses;
+        $bus = Bus::create($attributes);
+        $user->buses()->save($bus);
+        return $user->buses()->where('id', $bus->id)->first();
     }
 
     /**
-     * Update user's buses
+     * Update bus name
      *
      * @param Bus $bus
-     * @param string $name New name for the bus
+     * @param string $name
      * @return Bus
-     * @throws Exception
      */
-    public function updateName(Bus $bus, string $name)
+    public function updateName(Bus $bus, $name)
     {
         $bus->name = $name;
         $bus->save();
@@ -37,11 +36,9 @@ class BusRepository
     }
 
     /**
-     * Delete user's buses
-     * 
      * @param Bus $bus
-     * @return boolean true if successful
-     * @throws Exception
+     * @return bool|null
+     * @throws \Exception
      */
     public function delete(Bus $bus)
     {

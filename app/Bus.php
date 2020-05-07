@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Bus extends Model
 {
     /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = ['user_id'];
+
+    /**
      * A bus belong to a user
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
