@@ -2,25 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Services\BusStopService;
 use Illuminate\Support\Collection;
+use App\Http\Requests\ViewBusStop;
 use Illuminate\Pagination\Paginator;
-use App\Repositories\BusStopRepository;
 use App\Transformers\BusStopTransformer;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class BusStopController extends ApiController
 {
+    protected $busStopService;
+
     /**
-     * Create a new controller instance.
+     * BusStopController constructor.
      *
-     * @return void
+     * @param BusStopService $busStopService
      */
-    public function __construct(BusStopRepository $busStops)
+    public function __construct(BusStopService $busStopService)
     {
         parent::__construct();
 
-        $this->busStops = $busStops;
+        $this->busStopService = $busStopService;
 
         $this->setTransformer(new BusStopTransformer());
     }
@@ -28,14 +30,14 @@ class BusStopController extends ApiController
     /**
      * Get all bus stops base on user proximity
      *
-     * @param Request $request
+     * @param ViewBusStop $request
      * @return mixed
      * @throws \Exception
      */
-    public function all(Request $request)
+    public function all(ViewBusStop $request)
     {
-        $nearestBusStops = $this->busStops->nearby($request->latitude, $request->longitude);
-        $paginator = $this->paginate($nearestBusStops, 10, request('page'), ['path' => request()->path()]);
+        $nearestBusStops = $this->busStopService->nearby($request);
+        $paginator = $this->paginate($nearestBusStops, 10, request('page'), ['path' => request()->getRequestUri()]);
 
         return $this->respond($this->transform($paginator));
     }
@@ -48,10 +50,9 @@ class BusStopController extends ApiController
      */
     public function refresh()
     {
-        $busStops = $this->busStops->populate();
-        $paginator = $this->paginate($busStops, 10, request('page'), ['path' => request()->path()]);
+        $busStops = $this->busStopService->populate();
 
-        return $this->respond($this->transform($paginator));
+        return $this->respond($this->transform($busStops));
     }
 
     /**

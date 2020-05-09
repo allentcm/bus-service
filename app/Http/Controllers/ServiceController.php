@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Services\ServiceService;
 use App\Http\Requests\GetService;
-use App\Repositories\ServiceRepository;
 use App\Transformers\ServiceTransformer;
 
 class ServiceController extends ApiController
 {
+    protected $serviceService;
+
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(ServiceRepository $services)
+    public function __construct(ServiceService $serviceService)
     {
         parent::__construct();
 
-        $this->services = $services;
+        $this->serviceService = $serviceService;
 
         $this->setTransformer(new ServiceTransformer());
     }
@@ -33,7 +34,8 @@ class ServiceController extends ApiController
      */
     public function services(GetService $request, $code)
     {
-        $services = $this->services->getServices($code);
+        $services = $this->serviceService->services($code);
+
         return $this->respond($this->transform($services));
     }
 }

@@ -2,27 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Bus;
+use App\Services\BusService;
 use Illuminate\Http\Request;
 use App\Http\Requests\ViewBus;
 use App\Http\Requests\UpdateBus;
 use App\Http\Requests\DeleteBus;
 use App\Http\Requests\RegisterBus;
-use App\Repositories\BusRepository;
 use App\Transformers\BusTransformer;
 
 class BusController extends ApiController
 {
+    protected $busService;
+
     /**
-     * Create a new controller instance.
+     * BusController constructor.
      *
-     * @return void
+     * @param BusService $busService
      */
-    public function __construct(BusRepository $buses)
+    public function __construct(BusService $busService)
     {
         parent::__construct();
 
-        $this->buses = $buses;
+        $this->busService = $busService;
 
         $this->setTransformer(new BusTransformer());
     }
@@ -36,9 +37,7 @@ class BusController extends ApiController
      */
     public function all(Request $request)
     {
-        $user = $request->user();
-        // make sure the user get his own buses
-        return $this->respond($this->transform($user->buses));
+        return $this->respond($this->transform($this->busService->all($request)));
     }
 
     /**
@@ -50,8 +49,8 @@ class BusController extends ApiController
      */
     public function store(RegisterBus $request)
     {
-        // create user's bus
-        $bus = $this->buses->create($request->user(), $request->all());
+        $bus = $this->busService->create($request);
+
         if ($bus != null) {
             return $this->respond($this->transform($bus));
         } else {
@@ -69,13 +68,8 @@ class BusController extends ApiController
      */
     public function update(UpdateBus $request, $id)
     {
-        // chekc if the bus exist
-        $bus = Bus::find($id);
-        if ($bus == null) {
-            return $this->respondNotFound();
-        }
+        $bus = $this->busService->updateName($request, $id);
 
-        $bus = $this->buses->updateName($bus, $request->name);
         if ($bus != null) {
             return $this->respond($this->transform($bus));
         } else {
@@ -93,14 +87,7 @@ class BusController extends ApiController
      */
     public function destroy(DeleteBus $request, $id)
     {
-        // check if the bus exist
-        $bus = Bus::find($id);
-        if ($bus == null) {
-            return $this->respondNotFound();
-        }
-
-        // delete user's bus
-        if ($this->buses->delete($bus)) {
+        if ($this->busService->delete($id)) {
             return $this->respondWithMessage();
         } else {
             return $this->respondWithError('Unable to delete bus');
@@ -116,14 +103,8 @@ class BusController extends ApiController
      */
     public function arrival(ViewBus $request, $id)
     {
-        // check if the bus exist
-        $bus = Bus::find($id);
-        if ($bus == null) {
-            return $this->respondNotFound();
-        }
+        $result = $this->busService->arrival($id);
 
-        // get bus arrival time
-        $result = $this->buses->arrival($bus);
         return $this->respond($result);
     }
 }

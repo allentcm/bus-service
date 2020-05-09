@@ -46478,10 +46478,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 navigator.geolocation.getCurrentPosition(function (position) {
                     _this.latitude = position.coords.latitude;
                     _this.longitude = position.coords.longitude;
+                    __WEBPACK_IMPORTED_MODULE_0__event_bus__["a" /* default */].$emit('location-updated', _this.latitude, _this.longitude);
                 });
             }
-
-            __WEBPACK_IMPORTED_MODULE_0__event_bus__["a" /* default */].$emit('location-updated', this.latitude, this.longitude);
         }
     }
 });
@@ -47394,6 +47393,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
+            latitude: 0.00,
+            longitude: 0.00,
             busStops: [],
             form: {
                 name: '',
@@ -47404,14 +47405,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             busStopPagination: {}
         };
     },
-    created: function created() {
-        var self = this;
-        __WEBPACK_IMPORTED_MODULE_0__event_bus__["a" /* default */].$on('location-updated', function (latitude, longitude) {
-            return self.getBusStops(latitude, longitude);
-        });
-    },
     mounted: function mounted() {
         console.log('Component mounted.');
+
+        var self = this;
+        __WEBPACK_IMPORTED_MODULE_0__event_bus__["a" /* default */].$on('location-updated', function (latitude, longitude) {
+            self.latitude = latitude;
+            self.longitude = longitude;
+
+            self.getBusStops();
+        });
     },
 
 
@@ -47422,7 +47425,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         populateBusStops: function populateBusStops() {
             var _this = this;
 
-            axios.get('/api/bus-stops/refresh').then(function (response) {
+            // clear bus stops on every request
+            this.busStops = [];
+            this.busStopPagination = {};
+
+            axios['post']('/api/bus-stops').then(function (response) {
                 _this.busStops = response.data.entries;
             }).catch(function (error) {
                 console.log(error);
@@ -47433,10 +47440,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         /**
          * Get pagination of the bus stops by proximity.
          */
-        getBusStops: function getBusStops(latitude, longitude) {
+        getBusStops: function getBusStops() {
             var _this2 = this;
 
-            axios.get('/api/bus-stops?latitude=' + latitude + '&longitude=' + longitude).then(function (response) {
+            // clear bus stops on every request
+            this.busStops = [];
+
+            axios.get('/api/bus-stops?latitude=' + this.latitude + '&longitude=' + this.longitude).then(function (response) {
                 _this2.busStops = response.data.entries;
                 // get next page link
                 _this2.busStopPagination.links = { next: response.data.meta.pagination.links.next };

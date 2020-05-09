@@ -1,19 +1,25 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Services;
 
 use App\BusStop;
 use GuzzleHttp\Client;
+use App\Repositories\Repository;
+use App\Http\Requests\ViewBusStop;
 
-class BusStopRepository
+class BusStopService
 {
+    protected $busStop, $url, $appKey;
+
     /**
-     * Create a new controller instance.
+     * BusStopService constructor.
      *
-     * @return void
+     * @param BusStop $busStop
      */
-    public function __construct()
+    public function __construct(BusStop $busStop)
     {
+        $this->busStop = new Repository($busStop);
+
         $this->url = env('LTA_URL', '');
         $this->appKey = env('LTA_APP_KEY', '');
     }
@@ -55,25 +61,28 @@ class BusStopRepository
     public function populate()
     {
         // delete all bus stops
-        BusStop::truncate();
+        $this->busStop->truncate();
         // get all the bus stops from LTA
         $result = $this->getBusStops();
         // save all bus stops to DB
-        BusStop::insert($result);
+        $this->busStop->insert($result);
 
-        return BusStop::all();
+        return $this->busStop->all();
     }
 
     /**
      * Get nearby bus stops
      *
-     * @param float $latitude
-     * @param float $longitude
+     * @param ViewBusStop $request
      * @return BusStop[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function nearby($latitude = 0.00, $longitude = 0.00)
+    public function nearby(ViewBusStop $request)
     {
-        $busStops = BusStop::all();
+        $latitude = $request->latitude;
+        $longitude = $request->longitude;
+
+        $busStops = $this->busStop->all();
+
         $result = $busStops->sort(function ($a, $b) use ($latitude, $longitude) {
             $distanceA = $this->distance($latitude, $longitude, $a->latitude, $a->longitude);
             $distanceB = $this->distance($latitude, $longitude, $b->latitude, $b->longitude);
@@ -101,12 +110,14 @@ class BusStopRepository
         $long2 = deg2rad($longPos);
         $lat1 = deg2rad($latRef);
         $lat2 = deg2rad($latPos);
+
         //Haversine Formula
         $dlong = $long2 - $long1;
         $dlati = $lat2 - $lat1;
         $val = pow(sin($dlati/2),2)+cos($lat1)*cos($lat2)*pow(sin($dlong/2),2);
         $res = 2 * asin(sqrt($val));
         $radius = 3958.756;
+
         return ($res * $radius);
     }
 }

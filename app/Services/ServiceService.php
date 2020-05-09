@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Services;
 
+use App\Bus;
 use GuzzleHttp\Client;
 
-class ServiceRepository
+class ServiceService
 {
+    protected $bus, $url, $appKey;
+
     /**
-     * Create a new controller instance.
-     *
-     * @return void
+     * ServiceService constructor.
      */
     public function __construct()
     {
@@ -20,10 +21,22 @@ class ServiceRepository
     /**
      * Get bus stop's services
      *
+     * @param string $code Bus stop code
+     * @return mixed
+     * @throws \Exception
+     */
+    public function services($code)
+    {
+        return $this->getServices($code);
+    }
+
+    /**
+     * Get bus stop's services
+     *
      * @param string $code Targeted bus stop code
      * @return \Illuminate\Support\Collection Collection of services
      */
-    public function getServices($code)
+    private function getServices($code)
     {
         $client = new Client();
         $res = $client->request('GET', $this->url . '/BusArrivalv2?BusStopCode=' . $code, [

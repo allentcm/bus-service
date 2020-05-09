@@ -60,10 +60,9 @@
                     {
                         this.latitude = position.coords.latitude;
                         this.longitude = position.coords.longitude;
+                        EventBus.$emit('location-updated', this.latitude, this.longitude);
                     });
                 }
-
-                EventBus.$emit('location-updated', this.latitude, this.longitude);
             },
         }
     }

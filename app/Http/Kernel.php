@@ -58,9 +58,12 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'checkViewBus' => Middleware\CheckViewBus::class,
+        'checkAllBuses' => Middleware\CheckAllBuses::class,
         'checkBusFields' => Middleware\CheckBusFields::class,
         'checkUpdateBus' => Middleware\CheckUpdateBus::class,
         'checkDeleteBus' => Middleware\CheckDeleteBus::class,
         'checkViewService' => Middleware\CheckViewService::class,
+        'checkViewBusStop' => Middleware\CheckViewBusStop::class,
+        'checkRefreshBusStop' => Middleware\CheckRefreshBusStop::class,
     ];
 }

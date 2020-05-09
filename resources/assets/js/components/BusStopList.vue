@@ -50,6 +50,8 @@
     export default {
         data() {
             return {
+                latitude: 0.00,
+                longitude: 0.00,
                 busStops: [],
                 form: {
                     name: '',
@@ -61,13 +63,16 @@
             };
         },
 
-        created() {
-            const self = this;
-            EventBus.$on('location-updated', (latitude, longitude) => self.getBusStops(latitude, longitude));
-        },
-
         mounted() {
             console.log('Component mounted.')
+
+            const self = this;
+            EventBus.$on('location-updated', (latitude, longitude) => {
+                self.latitude = latitude;
+                self.longitude = longitude;
+
+                self.getBusStops();
+            });
         },
 
         methods: {
@@ -75,7 +80,11 @@
              * Get all the bus stops in SG.
              */
             populateBusStops() {
-                axios.get('/api/bus-stops/refresh')
+                // clear bus stops on every request
+                this.busStops = [];
+                this.busStopPagination= {};
+
+                axios['post']('/api/bus-stops')
                     .then(response => {
                         this.busStops = response.data.entries;
                     })
@@ -87,8 +96,11 @@
             /**
              * Get pagination of the bus stops by proximity.
              */
-            getBusStops(latitude, longitude) {
-                axios.get('/api/bus-stops?latitude=' + latitude + '&longitude=' + longitude)
+            getBusStops() {
+                // clear bus stops on every request
+                this.busStops = [];
+
+                axios.get('/api/bus-stops?latitude=' + this.latitude + '&longitude=' + this.longitude)
                     .then(response => {
                         this.busStops = response.data.entries;
                         // get next page link
