@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\BusStop;
 use Illuminate\Database\Eloquent\Model;
 
 class Bus extends Model
@@ -21,6 +22,13 @@ class Bus extends Model
     public function user()
     {
         return $this->belongsTo('App\User');
+    }
+
+    public function getBusStop()
+    {
+        $busStop = BusStop::where('bus_stop_code', $this->bus_stop_code)->first();
+
+        return $busStop;
     }
 
 }

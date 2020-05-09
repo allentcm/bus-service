@@ -4,9 +4,32 @@ namespace App\Repositories;
 
 use App\Bus;
 use App\User;
+use GuzzleHttp\Client;
 
 class BusRepository
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->url = env('LTA_URL', '');
+        $this->appKey = env('LTA_APP_KEY', '');
+    }
+
+    /**
+     * Get bus for user
+     *
+     * @param User $user
+     * @return mixed
+     */
+    public function all(User $user)
+    {
+        return $user->buses();
+    }
+
     /**
      * Create bus for user
      *
@@ -43,5 +66,30 @@ class BusRepository
     public function delete(Bus $bus)
     {
         return $bus->delete();
+    }
+
+    /**
+     * Get the bus arrival time at bus stop from LTA
+     *
+     * @return array
+     */
+    public function arrival(Bus $bus)
+    {
+        $client = new Client();
+        $res = $client->request('GET', $this->url
+                . '/BusArrivalv2?BusStopCode=' . $bus->bus_stop_code
+                . '&ServiceNo=' . $bus->service_no, [
+            'headers' => [
+                'AccountKey' => $this->appKey,
+                'Accept'     => 'application/json'
+            ]
+        ]);
+
+        $result = json_decode($res->getBody());
+        if ($result != null && isset($result->Services) && count($result->Services) > 0) {
+            return $result->Services[0]->NextBus->EstimatedArrival;
+        } else {
+            return '';
+        }
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Bus;
 use Illuminate\Http\Request;
+use App\Http\Requests\ViewBus;
 use App\Http\Requests\UpdateBus;
 use App\Http\Requests\DeleteBus;
 use App\Http\Requests\RegisterBus;
@@ -106,4 +107,23 @@ class BusController extends ApiController
         }
     }
 
+    /**
+     * Get the bus arrival time
+     *
+     * @param ViewBus $request
+     * @param $id
+     * @return mixed
+     */
+    public function arrival(ViewBus $request, $id)
+    {
+        // check if the bus exist
+        $bus = Bus::find($id);
+        if ($bus == null) {
+            return $this->respondNotFound();
+        }
+
+        // get bus arrival time
+        $result = $this->buses->arrival($bus);
+        return $this->respond($result);
+    }
 }

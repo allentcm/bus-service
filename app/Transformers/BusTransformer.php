@@ -8,6 +8,15 @@ use League\Fractal\TransformerAbstract;
 class BusTransformer extends TransformerAbstract
 {
     /**
+     * List of resources to automatically include
+     *
+     * @var array
+     */
+    protected $defaultIncludes = [
+        'bus_stop',
+    ];
+
+    /**
      * Transform bus data
      *
      * @param Bus $bus
@@ -25,5 +34,20 @@ class BusTransformer extends TransformerAbstract
             'origin_code' => $bus->origin_code,
             'destination_code' => $bus->destination_code
         ];
+    }
+
+    /**
+     * Include bus stop
+     *
+     * @param Bus $bus
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeBusStop(Bus $bus)
+    {
+        $busStop = $bus->getBusStop();
+        if ($busStop) {
+            $transformer = new BusStopTransformer();
+            return $this->item($busStop, $transformer, 'bus_stop');
+        }
     }
 }

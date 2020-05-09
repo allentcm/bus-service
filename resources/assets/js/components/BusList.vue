@@ -25,60 +25,11 @@
                         </div>
                     </div>
                     <ul class="list-group">
-                        <li class="list-group-item" v-for="(bus, index) in buses">
-                            <p>Name: {{ bus.name }}</p>
-                            <p>Bus No.: {{ bus.service_no }}</p>
-                            <p>Bus Stop Code: {{ bus.bus_stop_code }}</p>
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <a class="action-link" @click="showEditBus(index)">
-                                    Edit
-                                </a>
-                                <a class="action-link" @click="destroy(bus)">
-                                    Delete
-                                </a>
-                            </div>
-                        </li>
+                        <bus :bus="bus" v-for="bus in buses" :key="bus.id" @updated="getBuses" />
                     </ul>
-                </div>
-                <!-- Edit bus service modal -->
-                <div class="modal fade" id='modal-edit-service' tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button " class="close" aria-hidden="true" @click="closeEditBus()">&times;</button>
-                            <h4 class="modal-title">Edit bus</h4>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Form Errors -->
-                            <div class="alert alert-danger" v-if="editForm.errors.length > 0">
-                                <p><strong>Whoops!</strong> Something went wrong!</p>
-                                <br>
-                                <ul>
-                                    <li v-for="error in editForm.errors">
-                                        {{ error }}
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <form class="form-horizontal" role="form" @submit.prevent>
-                                <div class="form-group">
-                                    <label for="name" class="col-sm-4 control-label">Name</label>
-                                    <div class="col-sm-8">
-                                    <input type="text" class="form-control" id="name" v-model="editForm.name">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="col-sm-offset-4 col-sm-8">
-                                    <button type="button" class="btn btn-primary" :disabled="editForm.busy"  @click="updateBusService"><i class="fa fa-btn fa-spinner fa-spin" aria-hidden="true" v-if="editForm.busy"></i>Update</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @click="closeEditBus()">Close</button>
-                        </div>
-                        </div>
-                    </div>
+                    <p class="text-center" v-if="buses.length === 0">
+                        Go to the Bus Stop panel to register a bus.
+                    </p>
                 </div>
             </div>
         </div>
@@ -86,13 +37,12 @@
 </template>
 
 <script>
+    import EventBus from './event-bus';
+
     export default {
         data() {
             return {
-                latitude: 0.00,
-                longitude: 0.00,
                 buses: [],
-                selectedBus: {},
                 editForm: {
                     name: '',
                     busy: false,
@@ -101,14 +51,19 @@
             };
         },
 
+        created() {
+            const self = this;
+            EventBus.$on(['new-bus', 'bus-registered'], () => self.getBuses());
+        },
+
         mounted() {
-            console.log('Component mounted.')
+            console.log('Component mounted.');
             this.getBuses();
         },
 
         methods: {
             /**
-             * Get all the bus stops in SG.
+             * Get all the user's buses
              */
             getBuses() {
                 axios.get('/api/buses')
@@ -119,60 +74,6 @@
                         console.log(error)
                     });
             },
-
-            /**
-             * Show the current bus stop bus services.
-             */
-            showEditBus(index) {
-                this.selectedBus = this.buses[index];
-                this.editForm.name = this.selectedBus.name;
-                $('#modal-edit-service').modal('show');
-            },
-
-            /**
-             * Hide the current bus stop bus services.
-             */
-            closeEditBus() {
-                $('#modal-edit-service').modal('hide');
-                this.editForm.name = '';
-                this.editForm.busy = false;
-                this.editForm.errors = [];
-                this.editForm.bus = [];
-            },
-
-            /**
-             * Show the form to register bus service.
-             */
-            updateBusService() {
-                // prepare data for storing
-                let data = {};
-                data.name = this.editForm.name;
-                axios['post']('/api/buses/' + this.selectedBus.id, data)
-                    .then(response => {
-                        this.editForm.name = '';
-                        this.editForm.busy = false;
-                        this.editForm.errors = [];
-                        this.getBuses();
-                    })
-                    .catch(error => {
-                        if (typeof error.response.data === 'object') {
-                            this.editForm.errors = _.flatten(_.toArray(error.response.data));
-                        } else {
-                            this.editForm.errors = ['Something went wrong. Please try again.'];
-                        }
-                        this.editForm.busy = false;
-                    });
-            },
-
-            /**
-             * Destroy the given client.
-             */
-            destroy(bus) {
-                axios.delete('/api/buses/' + bus.id)
-                        .then(response => {
-                            this.getBuses();
-                        });
-            }
         }
     }
 </script>

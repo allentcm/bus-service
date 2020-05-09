@@ -4,7 +4,8 @@
 <div class="container">
     <div class="row">
         <bus-list></bus-list>
-        <example></example>
+        <location></location>
+        <bus-stop-list></bus-stop-list>
     </div>
 </div>
 @endsection

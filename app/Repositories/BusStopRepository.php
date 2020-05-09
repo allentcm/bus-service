@@ -23,7 +23,7 @@ class BusStopRepository
      *
      * @return array
      */
-    public function getBusStops()
+    private function getBusStops()
     {
         $client = new Client();
         $res = $client->request('GET', $this->url . '/BusStops', [
