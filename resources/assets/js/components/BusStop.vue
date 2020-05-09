@@ -46,6 +46,9 @@
                             </div>
                         </li>
                     </ul>
+                    <p class="text-center" v-if="services.length === 0">
+                        No service available at the moment.
+                    </p>
                 </div>
             </div>
         </div>

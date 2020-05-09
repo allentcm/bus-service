@@ -45621,7 +45621,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         updateArrival: function updateArrival(dateString) {
             var now = new Date();
             var arrival = new Date(dateString);
-            this.arrival = this.inMinutes(now, arrival);
+            if (arrival instanceof Date && !isNaN(arrival)) {
+                this.arrival = this.inMinutes(now, arrival);
+            } else {
+                this.arrival = 'Unavailable';
+            }
         },
 
 
@@ -46762,6 +46766,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 //
 //
 //
+//
+//
+//
 
 
 
@@ -47030,7 +47037,15 @@ var render = function() {
                   ])
                 }),
                 0
-              )
+              ),
+              _vm._v(" "),
+              _vm.services.length === 0
+                ? _c("p", { staticClass: "text-center" }, [
+                    _vm._v(
+                      "\n                    No service available at the moment.\n                "
+                    )
+                  ])
+                : _vm._e()
             ])
           ]
         )

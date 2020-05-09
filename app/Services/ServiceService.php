@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Bus;
 use GuzzleHttp\Client;
 
 class ServiceService

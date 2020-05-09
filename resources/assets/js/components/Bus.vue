@@ -258,7 +258,11 @@
             updateArrival(dateString) {
                 let now = new Date();
                 let arrival = new Date(dateString);
-                this.arrival = this.inMinutes(now, arrival);
+                if (arrival instanceof Date && !isNaN(arrival)) {
+                    this.arrival = this.inMinutes(now, arrival);
+                } else {
+                    this.arrival = 'Unavailable';
+                }
             },
 
             /**
