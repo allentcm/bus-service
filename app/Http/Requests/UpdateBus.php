@@ -37,7 +37,7 @@ class UpdateBus extends FormRequest
             'name' => [
                 'required',
                 'max:255',
-                'string',
+                'regex:/^[a-zA-Z0-9\s]+$/',
                 Rule::unique('buses')->where(function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 })

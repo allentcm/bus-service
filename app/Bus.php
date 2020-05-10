@@ -24,6 +24,11 @@ class Bus extends Model
         return $this->belongsTo('App\User');
     }
 
+    /**
+     * Get the bus stop for this bus
+     *
+     * @return \App\BusStop|Model|null
+     */
     public function getBusStop()
     {
         $busStop = BusStop::where('bus_stop_code', $this->bus_stop_code)->first();
